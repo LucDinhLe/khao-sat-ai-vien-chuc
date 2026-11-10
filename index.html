@@ -20,27 +20,48 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      padding: 24px 12px 60px;
+      padding: 20px 12px 60px;
       font-family: 'Segoe UI', Roboto, Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.55;
     }
     .container {
-      max-width: 820px;
+      max-width: 850px;
       margin: 0 auto;
+    }
+    .top-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .tab-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
     }
     .header-card {
       background: var(--card);
       border-radius: 10px;
       border-top: 10px solid var(--primary);
-      padding: 28px 32px;
+      padding: 26px 30px;
       box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
       margin-bottom: 18px;
     }
     .header-card h1 {
       margin: 0 0 12px;
-      font-size: 24px;
+      font-size: 23px;
       color: var(--primary);
       line-height: 1.35;
     }
@@ -48,6 +69,15 @@
       margin: 6px 0;
       font-size: 14.5px;
       color: #334155;
+    }
+    .guide-box {
+      background: #f8fafc;
+      border-left: 4px solid var(--accent);
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-top: 12px;
+      font-size: 13.8px;
+      color: #1e293b;
     }
     .badge-bar {
       display: flex;
@@ -71,7 +101,6 @@
       margin-top: 26px;
       font-weight: 700;
       font-size: 16px;
-      letter-spacing: 0.2px;
     }
     .section-desc {
       background: #e2e8f0;
@@ -190,8 +219,8 @@
       margin-top: 24px;
     }
     .btn {
-      padding: 13px 26px;
-      font-size: 15.5px;
+      padding: 13px 24px;
+      font-size: 15px;
       font-weight: 700;
       border-radius: 8px;
       border: none;
@@ -213,19 +242,18 @@
       background: var(--accent);
       color: #fff;
     }
-    /* Result Modal / Card */
     #resultSection {
       display: none;
       background: var(--card);
       border-radius: 10px;
       border-top: 10px solid var(--accent);
-      padding: 30px;
+      padding: 28px;
       margin-top: 28px;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14);
     }
     .result-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
       margin: 18px 0;
     }
@@ -256,7 +284,7 @@
     .class-callout h3 {
       margin: 0 0 6px;
       color: #15803d;
-      font-size: 19px;
+      font-size: 18.5px;
     }
     .warn-callout {
       background: #fef2f2;
@@ -268,357 +296,434 @@
       font-size: 14px;
       display: none;
     }
+    /* Admin Panel */
+    #adminPanel {
+      display: none;
+      background: var(--card);
+      border-radius: 10px;
+      border-top: 10px solid var(--amber);
+      padding: 26px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-size: 13.5px;
+    }
+    .data-table th, .data-table td {
+      border: 1px solid #cbd5e1;
+      padding: 9px 10px;
+      text-align: left;
+    }
+    .data-table th {
+      background: var(--primary);
+      color: #fff;
+    }
+    .data-table tr:nth-child(even) { background: #f8fafc; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Thanh Tiến độ cố định -->
-  <div class="progress-sticky">
-    <div class="progress-text" id="progressLabel">Tiến độ hoàn thành: 0 / 20 câu</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar-fill" id="progressBar"></div>
+  <!-- Chuyển đổi giữa Phiếu Khảo Sát và Bảng Quản Trị Kết Quả -->
+  <div class="top-tabs">
+    <button type="button" class="tab-btn active" id="tabSurveyBtn" onclick="switchTab('survey')">📝 Phiếu Khảo Sát Viên Chức</button>
+    <button type="button" class="tab-btn" id="tabAdminBtn" onclick="switchTab('admin')">📊 Bảng Tổng Hợp Kết Quả & Xếp Lớp (<span id="countBadge">0</span>)</button>
+  </div>
+
+  <!-- TAB 1: PHIẾU KHẢO SÁT -->
+  <div id="surveyView">
+    <div class="progress-sticky">
+      <div class="progress-text" id="progressLabel">Tiến độ hoàn thành: 0 / 20 câu</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </div>
+
+    <div class="header-card">
+      <h1>KHẢO SÁT MỨC ĐỘ THÀNH THỤC AI DÀNH CHO VIÊN CHỨC NHÀ NƯỚC</h1>
+      <p>Chào mừng anh/chị tham gia khảo sát đánh giá mức độ sẵn sàng và kỹ năng ứng dụng Trí tuệ nhân tạo (AI) phục vụ công việc chuyên môn.</p>
+      <p>• <strong>Mục đích:</strong> Tìm hiểu thực trạng sử dụng công cụ của từng cán bộ, công chức, viên chức để <strong>xếp vào đúng lớp đào tạo phù hợp với trình độ</strong> (tránh tình trạng người mới bị ngợp, người đã biết thấy nhàm chán).</p>
+      <p>• <strong>Lưu ý:</strong> Đây không phải là bài thi đánh giá thi đua. Mỗi câu hỏi mô tả 04 cách làm thực tế từ cơ bản đến nâng cao (Mức 1 đến Mức 4), anh/chị vui lòng chọn cách phản ánh <strong>ĐÚNG NHẤT</strong> thói quen hiện tại của mình.</p>
+      <div class="guide-box">
+        💡 <strong>Gợi ý nguyên tắc "5 Bước Giao Việc Chuẩn Cho AI" (Ai cũng làm được):</strong><br/>
+        Khi nhờ AI làm việc hành chính, kết quả sẽ chuẩn nhất nếu anh/chị giao việc đủ 5 bước như giao cho chuyên viên: <strong>(1) Giao vai trò & loại văn bản</strong> ➔ <strong>(2) Nêu tình huống thực tế & che thông tin mật</strong> ➔ <strong>(3) Đính kèm văn bản luật gốc & mẫu của cơ quan</strong> ➔ <strong>(4) Kiểm tra, rà soát lỗi</strong> ➔ <strong>(5) Yêu cầu AI sửa lại chỗ chưa ưng ý</strong>.
+      </div>
+      <div class="badge-bar">
+        <span class="badge">⏱ Thời lượng: ~8–10 phút</span>
+        <span class="badge">📊 Thang đo: 4 Mức độ (1.00 – 4.00)</span>
+        <span class="badge">🎯 Tự động chấm điểm & phân lớp ngay sau khi gửi</span>
+      </div>
+    </div>
+
+    <form id="surveyForm" novalidate>
+      <div class="section-banner">PHẦN I. THÔNG TIN ĐỊNH DANH & VỊ TRÍ CÔNG TÁC</div>
+      <div class="section-desc">Thông tin này dùng để xếp bàn thực hành theo nhóm nghiệp vụ và phân lớp đào tạo sát với công việc hằng ngày của anh/chị.</div>
+
+      <div class="question-card">
+        <div class="q-title">1. Họ và tên cán bộ, công chức, viên chức <span class="req">*</span></div>
+        <input type="text" id="fullName" class="text-input" placeholder="Nhập đầy đủ họ và tên..." required />
+      </div>
+
+      <div class="question-card">
+        <div class="q-title">2. Đơn vị công tác (Ghi rõ Phòng/Ban/Bộ phận và Tên Cơ quan / UBND Xã, Phường) <span class="req">*</span></div>
+        <input type="text" id="unitName" class="text-input" placeholder="Ví dụ: Bộ phận Tư pháp - Hộ tịch, UBND phường..." required />
+      </div>
+
+      <div class="question-card">
+        <div class="q-title">3. Số điện thoại (Zalo nhận tài liệu & thông báo lớp học) <span class="req">*</span></div>
+        <input type="tel" id="phone" class="text-input" placeholder="Nhập số điện thoại Zalo..." required />
+      </div>
+
+      <div class="question-card">
+        <div class="q-title">4. Địa chỉ Email công vụ hoặc cá nhân</div>
+        <input type="email" id="email" class="text-input" placeholder="Nhập địa chỉ email (nếu có)..." />
+      </div>
+
+      <div class="question-card">
+        <div class="q-title">5. Nhóm vị trí công tác hiện tại của anh/chị (Chọn 01 nhóm phù hợp nhất) <span class="req">*</span></div>
+        <select id="roleGroup" class="select-input" required>
+          <option value="">-- Chọn nhóm vị trí công tác --</option>
+          <option value="Nhóm 1: Lãnh đạo, Quản lý">Nhóm 1: Lãnh đạo, Quản lý (Thường trực Đảng ủy, HĐND, Lãnh đạo UBND, Thủ trưởng đơn vị, Trưởng/Phó phòng ban)</option>
+          <option value="Nhóm 2: Một cửa / Trung tâm HCC">Nhóm 2: Bộ phận Tiếp nhận & Trả kết quả / Trung tâm Phục vụ hành chính công (Một cửa)</option>
+          <option value="Nhóm 3: Văn phòng - Thống kê - Nội vụ">Nhóm 3: Văn phòng – Thống kê, Hành chính – Tổng hợp, Văn thư – Lưu trữ, Tổ chức – Nội vụ</option>
+          <option value="Nhóm 4: Tư pháp - Hộ tịch - Thanh tra">Nhóm 4: Tư pháp – Hộ tịch, Pháp chế, Thanh tra, Tiếp công dân & Xử lý vi phạm hành chính</option>
+          <option value="Nhóm 5: Địa chính - Xây dựng - Môi trường">Nhóm 5: Địa chính – Đất đai – Xây dựng – Đô thị – Tài nguyên & Môi trường</option>
+          <option value="Nhóm 6: Tài chính - Kế toán - Đầu tư">Nhóm 6: Tài chính – Kế toán – Ngân sách – Kế hoạch & Đầu tư công</option>
+          <option value="Nhóm 7: Văn hóa - Xã hội - Giáo dục - Y tế - Quân sự">Nhóm 7: Văn hóa – Xã hội, Giáo dục, Y tế, Lao động – Bảo trợ xã hội, Truyền thông, Quân sự</option>
+        </select>
+      </div>
+
+      <div id="questionsContainer"></div>
+
+      <div class="actions-bar">
+        <button type="button" class="btn btn-secondary" onclick="resetSurvey()">Làm mới phiếu</button>
+        <button type="submit" class="btn btn-primary">GỬI KHẢO SÁT & XEM KẾT QUẢ XẾP LỚP ➔</button>
+      </div>
+    </form>
+
+    <!-- KẾT QUẢ CÁ NHÂN TỨC THÌ -->
+    <div id="resultSection">
+      <h2 style="margin-top:0; color: var(--primary);">KẾT QUẢ ĐÁNH GIÁ MỨC ĐỘ THÀNH THỤC AI & PHÂN LỚP ĐÀO TẠO</h2>
+      <p id="resIdentity" style="font-size: 15px; color: #334155;"></p>
+
+      <div class="result-grid">
+        <div class="score-box">
+          <div class="num" id="scoreTC1">0.00</div>
+          <div class="lbl">TC1: Thói quen & Công cụ ( /4.0)</div>
+        </div>
+        <div class="score-box">
+          <div class="num" id="scoreTC2">0.00</div>
+          <div class="lbl">TC2: Bảo mật & Kiểm chứng ( /4.0)</div>
+        </div>
+        <div class="score-box">
+          <div class="num" id="scoreTC3">0.00</div>
+          <div class="lbl">TC3: Kỹ năng Giao việc cho AI ( /4.0)</div>
+        </div>
+        <div class="score-box">
+          <div class="num" id="scoreTC4">0.00</div>
+          <div class="lbl">TC4: Tra cứu Luật & Bảng tính ( /4.0)</div>
+        </div>
+        <div class="score-box">
+          <div class="num" id="scoreTC5">0.00</div>
+          <div class="lbl">TC5: Tạo Trợ lý riêng & Tự động hóa ( /4.0)</div>
+        </div>
+        <div class="score-box" style="background:#eff6ff; border-color: var(--primary-light);">
+          <div class="num" id="scoreAvg" style="color: var(--accent);">0.00</div>
+          <div class="lbl"><strong>ĐIỂM TB CHUNG (Thang 4.00)</strong></div>
+        </div>
+      </div>
+
+      <div id="securityWarning" class="warn-callout">
+        <strong>⚠️ LƯU Ý VỀ AN TOÀN BẢO MẬT CÔNG VỤ (Điểm Bảo mật &lt; 2.00):</strong> Điểm kỹ năng bảo mật thông tin công dân và kiểm chứng điều khoản pháp luật của anh/chị đang dưới mức an toàn (2.00/4.00). Hệ thống ưu tiên xếp anh/chị vào học kỹ năng Bảo mật Đèn Giao Thông & Giao việc chuẩn cho AI trước khi học tạo Trợ lý AI tự động.
+      </div>
+
+      <div class="class-callout">
+        <div style="font-size: 13.5px; font-weight:700; color:#166534; text-transform:uppercase;">Mức độ hiện tại & Lớp đào tạo được đề xuất:</div>
+        <h3 id="resLevelTitle">LEVEL ...</h3>
+        <p id="resClassDesc" style="margin: 6px 0 0; font-size: 15px; color: #1e293b;"></p>
+      </div>
+
+      <div class="actions-bar" style="margin-top: 18px;">
+        <button type="button" class="btn btn-teal" onclick="exportSingleCSV()">📥 Tải Phiếu Kết Quả Cá Nhân (Excel / CSV)</button>
+        <button type="button" class="btn btn-secondary" onclick="copyZaloSummary()">📋 Copy Kết Quả Gửi Zalo Ban Tổ Chức</button>
+        <button type="button" class="btn btn-secondary" onclick="window.print()">🖨 In Phiếu (PDF)</button>
+      </div>
     </div>
   </div>
 
-  <!-- Tiêu đề Form -->
-  <div class="header-card">
-    <h1>KHẢO SÁT MỨC ĐỘ THÀNH THỤC AI DÀNH CHO VIÊN CHỨC NHÀ NƯỚC</h1>
-    <p>Chào mừng anh/chị tham gia khảo sát đánh giá mức độ sẵn sàng và thành thục ứng dụng Trí tuệ nhân tạo (AI) trong khu vực công.</p>
-    <p>• <strong>Mục đích:</strong> Phân loại chính xác nhu cầu và mức độ thành thục hiện tại (từ <strong>Mức 1 đến Mức 4</strong> theo trục: <em>An toàn bảo mật ➔ Kỹ năng câu lệnh TCREI ➔ Kho pháp luật NotebookLM ➔ Kiến tạo AI Agents & Tự động hóa</em>) nhằm xếp lớp đào tạo sát thực tế nhất.</p>
-    <p>• <strong>Lưu ý:</strong> Đây không phải là bài thi đánh giá thi đua. Mỗi câu hỏi có 04 mức độ thực hành (tương ứng từ 1 đến 4 điểm), anh/chị vui lòng chọn phương án phản ánh <strong>ĐÚNG NHẤT</strong> thói quen và cách làm hiện tại của mình.</p>
-    <div class="badge-bar">
-      <span class="badge">⏱ Thời lượng: ~10 phút</span>
-      <span class="badge">📊 Thang đo: BARS 1.00 – 4.00 (4 Levels)</span>
-      <span class="badge">🎯 Tự động chấm điểm & xếp lớp</span>
-    </div>
-  </div>
-
-  <form id="surveyForm" novalidate>
-    <!-- PHẦN I: ĐỊNH DANH -->
-    <div class="section-banner">PHẦN I. THÔNG TIN ĐỊNH DANH & VỊ TRÍ CÔNG TÁC</div>
-    <div class="section-desc">Thông tin này dùng để xếp bàn thực hành theo nhóm nghiệp vụ và phân luồng lớp đào tạo phù hợp với chức trách, nhiệm vụ.</div>
-
-    <div class="question-card">
-      <div class="q-title">1. Họ và tên cán bộ, công chức, viên chức <span class="req">*</span></div>
-      <input type="text" id="fullName" class="text-input" placeholder="Nhập đầy đủ họ và tên..." required />
+  <!-- TAB 2: BẢNG TỔNG HỢP KẾT QUẢ & XẾP LỚP (DÀNH CHO BAN TỔ CHỨC) -->
+  <div id="adminPanel">
+    <h2 style="margin-top:0; color: var(--primary);">📊 BẢNG TỔNG HỢP KẾT QUẢ KHẢO SÁT & PHÂN LỚP ĐÀO TẠO</h2>
+    <p style="font-size: 14px; color: #334155;">
+      • Toàn bộ các phiếu khảo sát đã gửi trên thiết bị này được lưu tự động tại bảng dưới đây.<br/>
+      • <strong>Kết nối tự động về Google Sheets trung tâm của Ban Tổ Chức:</strong> Dán đường link Google Apps Script Web App vào ô dưới đây để mọi phiếu khảo sát tự động đổ thẳng về file Google Sheets của anh.
+    </p>
+    <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">
+      <input type="url" id="webhookUrl" class="text-input" style="flex:1; min-width:260px;" placeholder="Dán link Google Sheets Web App (https://script.google.com/macros/s/.../exec) nếu muốn đồng bộ đám mây..." />
+      <button type="button" class="btn btn-primary" onclick="saveWebhook()">Lưu kết nối Google Sheets</button>
     </div>
 
-    <div class="question-card">
-      <div class="q-title">2. Đơn vị công tác (Ghi rõ Phòng/Ban/Bộ phận và Tên Cơ quan / UBND Xã, Phường) <span class="req">*</span></div>
-      <input type="text" id="unitName" class="text-input" placeholder="Ví dụ: Bộ phận Tư pháp - Hộ tịch, UBND phường..." required />
+    <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-teal" onclick="exportAllCSV()">📥 Xuất Toàn Bộ Danh Sách Ra File Excel (.CSV)</button>
+      <button type="button" class="btn btn-secondary" onclick="clearAllRecords()">🗑 Xóa danh sách lưu tạm</button>
     </div>
 
-    <div class="question-card">
-      <div class="q-title">3. Số điện thoại (Zalo nhận tài liệu & thông báo lớp học) <span class="req">*</span></div>
-      <input type="tel" id="phone" class="text-input" placeholder="Nhập số điện thoại Zalo..." required />
-    </div>
-
-    <div class="question-card">
-      <div class="q-title">4. Địa chỉ Email công vụ hoặc cá nhân</div>
-      <input type="email" id="email" class="text-input" placeholder="Nhập địa chỉ email (nếu có)..." />
-    </div>
-
-    <div class="question-card">
-      <div class="q-title">5. Nhóm vị trí công tác hiện tại của anh/chị (Chọn 01 nhóm phù hợp nhất) <span class="req">*</span></div>
-      <select id="roleGroup" class="select-input" required>
-        <option value="">-- Chọn nhóm vị trí công tác --</option>
-        <option value="Nhóm 1: Lãnh đạo, Quản lý">Nhóm 1: Lãnh đạo, Quản lý (Thường trực Đảng ủy, HĐND, Lãnh đạo UBND, Thủ trưởng đơn vị, Trưởng/Phó phòng ban)</option>
-        <option value="Nhóm 2: Một cửa / Trung tâm HCC">Nhóm 2: Bộ phận Tiếp nhận & Trả kết quả / Trung tâm Phục vụ hành chính công (Một cửa)</option>
-        <option value="Nhóm 3: Văn phòng - Thống kê - Nội vụ">Nhóm 3: Văn phòng – Thống kê, Hành chính – Tổng hợp, Văn thư – Lưu trữ, Tổ chức – Nội vụ</option>
-        <option value="Nhóm 4: Tư pháp - Hộ tịch - Thanh tra">Nhóm 4: Tư pháp – Hộ tịch, Pháp chế, Thanh tra, Tiếp công dân & Xử lý vi phạm hành chính</option>
-        <option value="Nhóm 5: Địa chính - Xây dựng - Môi trường">Nhóm 5: Địa chính – Đất đai – Xây dựng – Đô thị – Tài nguyên & Môi trường</option>
-        <option value="Nhóm 6: Tài chính - Kế toán - Đầu tư">Nhóm 6: Tài chính – Kế toán – Ngân sách – Kế hoạch & Đầu tư công</option>
-        <option value="Nhóm 7: Văn hóa - Xã hội - Giáo dục - Y tế - Quân sự">Nhóm 7: Văn hóa – Xã hội, Giáo dục, Y tế, Lao động – Bảo trợ xã hội, Truyền thông, Quân sự</option>
-      </select>
-    </div>
-
-    <!-- Nơi render tự động 20 câu hỏi -->
-    <div id="questionsContainer"></div>
-
-    <div class="actions-bar">
-      <button type="button" class="btn btn-secondary" onclick="resetSurvey()">Làm mới phiếu</button>
-      <button type="submit" class="btn btn-primary">GỬI KHẢO SÁT & XEM KẾT QUẢ PHÂN LỚP ➔</button>
-    </div>
-  </form>
-
-  <!-- KẾT QUẢ CHẤM ĐIỂM & XẾP LỚP TỨC THÌ -->
-  <div id="resultSection">
-    <h2 style="margin-top:0; color: var(--primary);">KẾT QUẢ ĐÁNH GIÁ MỨC ĐỘ THÀNH THỤC AI & PHÂN LỚP ĐÀO TẠO</h2>
-    <p id="resIdentity" style="font-size: 15px; color: #334155;"></p>
-
-    <div class="result-grid">
-      <div class="score-box">
-        <div class="num" id="scoreTC1">0.00</div>
-        <div class="lbl">TC1: Thói quen & Công cụ ( /4.0)</div>
-      </div>
-      <div class="score-box">
-        <div class="num" id="scoreTC2">0.00</div>
-        <div class="lbl">TC2: Bảo mật & Kiểm chứng ( /4.0)</div>
-      </div>
-      <div class="score-box">
-        <div class="num" id="scoreTC3">0.00</div>
-        <div class="lbl">TC3: Câu lệnh TCREI ( /4.0)</div>
-      </div>
-      <div class="score-box">
-        <div class="num" id="scoreTC4">0.00</div>
-        <div class="lbl">TC4: NotebookLM & Đa phương thức ( /4.0)</div>
-      </div>
-      <div class="score-box">
-        <div class="num" id="scoreTC5">0.00</div>
-        <div class="lbl">TC5: AI Agents & Tự động hóa ( /4.0)</div>
-      </div>
-      <div class="score-box" style="background:#eff6ff; border-color: var(--primary-light);">
-        <div class="num" id="scoreAvg" style="color: var(--accent);">0.00</div>
-        <div class="lbl"><strong>ĐIỂM TB CHUNG (Thang 4.00)</strong></div>
-      </div>
-    </div>
-
-    <div id="securityWarning" class="warn-callout">
-      <strong>⚠️ CẢNH BÁO CỔNG AN TOÀN BẢO MẬT (TC2 &lt; 2.00):</strong> Điểm kỹ năng An toàn Bảo mật Công vụ & Kiểm soát Ảo giác Pháp lý của anh/chị đang dưới ngưỡng an toàn (2.00/4.00). Theo quy tắc Cổng lọc số 2, hệ thống ưu tiên xếp anh/chị vào học phần Bảo mật Đèn Giao Thông & Chuẩn hóa TCREI trước khi xây dựng AI Agents.
-    </div>
-
-    <div class="class-callout">
-      <div style="font-size: 13.5px; font-weight:700; color:#166534; text-transform:uppercase;">Mức độ hiện tại & Lớp đào tạo được phân công:</div>
-      <h3 id="resLevelTitle">LEVEL ...</h3>
-      <p id="resClassDesc" style="margin: 6px 0 0; font-size: 15px; color: #1e293b;"></p>
-    </div>
-
-    <div class="actions-bar" style="margin-top: 18px;">
-      <button type="button" class="btn btn-teal" onclick="exportCSV()">📥 Tải kết quả về máy (File Excel / CSV)</button>
-      <button type="button" class="btn btn-secondary" onclick="window.print()">🖨 In Phiếu Kết Quả (PDF)</button>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>STT</th>
+            <th>Thời gian</th>
+            <th>Họ và tên</th>
+            <th>Đơn vị</th>
+            <th>SĐT Zalo</th>
+            <th>Nhóm vị trí</th>
+            <th>TC1</th>
+            <th>TC2 (Bảo mật)</th>
+            <th>TC3 (Giao việc)</th>
+            <th>TC4 (Luật/Excel)</th>
+            <th>TC5 (Trợ lý AI)</th>
+            <th>ĐTB Chung</th>
+            <th>Lớp Đào Tạo Được Xếp</th>
+          </tr>
+        </thead>
+        <tbody id="recordsTableBody"></tbody>
+      </table>
     </div>
   </div>
 </div>
 
 <script>
+// 20 CÂU HỎI ĐÃ ĐƯỢC VIỆT HÓA 100% NGÔN NGỮ HÀNH CHÍNH ĐỜI THƯỜNG (AI ĐỌC CŨNG HIỂU NGAY)
 const sectionsData = [
   {
-    banner: "PHẦN II. TIÊU CHÍ 1 (TC1): THÓI QUEN TIẾP CẬN & SỬ DỤNG CÔNG CỤ AI",
-    desc: "Đánh giá tần suất, hệ sinh thái công cụ và phản xạ ứng dụng AI trong công việc hàng ngày (Câu 1 đến Câu 4).",
+    banner: "PHẦN II. TIÊU CHÍ 1: THÓI QUEN TIẾP CẬN & SỬ DỤNG CÔNG CỤ AI",
+    desc: "Tìm hiểu mức độ thường xuyên và các công cụ AI mà anh/chị đã từng dùng trong công việc (Câu 1 đến Câu 4).",
     questions: [
       {
         id: 1,
-        title: "Câu 1 [TC1]. Tần suất anh/chị sử dụng các công cụ Trí tuệ nhân tạo (ChatGPT, Google Gemini, Claude, Copilot...) để hỗ trợ công việc chuyên môn hiện nay là gì?",
+        title: "Câu 1. Hiện nay, anh/chị có thường xuyên sử dụng các công cụ Trí tuệ nhân tạo (như ChatGPT, Google Gemini, Claude, Copilot...) để hỗ trợ công việc chuyên môn không?",
         options: [
-          "Mức 1: Chưa từng sử dụng, mới chỉ nghe nói hoặc mới tải về dùng thử vài lần, chưa áp dụng vào công việc thực tế.",
-          "Mức 2: Sử dụng vài lần mỗi tuần để hỗ trợ giải quyết từng việc lẻ (tra cứu thông tin, gợi ý ý tưởng, soạn thảo văn bản ngắn).",
-          "Mức 3: Sử dụng hàng ngày như trợ lý cố định cho các khâu chuyên môn (tra cứu văn bản luật, soạn công văn/báo cáo, xử lý bảng tính) thông qua các sổ tay/trợ lý AI đã thiết lập sẵn.",
-          "Mức 4: Sử dụng liên tục hàng ngày và đã tích hợp AI vào luồng quy trình làm việc tự động trên máy tính/đám mây của đơn vị."
+          "Mức 1: Tôi chưa từng sử dụng, mới chỉ nghe nói hoặc mới tải về dùng thử vài lần, chưa áp dụng vào công việc thực tế.",
+          "Mức 2: Tôi sử dụng vài lần mỗi tuần để hỗ trợ giải quyết từng việc lẻ (như tra cứu thông tin, gợi ý ý tưởng, soạn đoạn văn bản ngắn).",
+          "Mức 3: Tôi sử dụng hàng ngày như một trợ lý quen thuộc cho nhiều việc (tra cứu văn bản luật, soạn công văn/báo cáo, xử lý bảng tính Excel) thông qua các sổ tay/trợ lý AI đã cài đặt sẵn.",
+          "Mức 4: Tôi sử dụng liên tục hàng ngày và đã kết nối AI vào quy trình làm việc tự động trên máy tính hoặc đám mây của đơn vị."
         ]
       },
       {
         id: 2,
-        title: "Câu 2 [TC1]. Anh/chị đã trực tiếp tạo tài khoản và thao tác thực tế trên những nhóm công cụ AI nào dưới đây?",
+        title: "Câu 2. Anh/chị đã từng trực tiếp tạo tài khoản và thao tác trên những nhóm công cụ AI nào dưới đây?",
         options: [
-          "Mức 1: Chưa có tài khoản hoặc mới chỉ dùng 01 công cụ trò chuyện miễn phí cơ bản (như ChatGPT hoặc Zalo AI) để hỏi đáp đơn giản.",
-          "Mức 2: Đã biết kết hợp các mô hình ngôn ngữ (ChatGPT, Google Gemini, Claude) cùng với Sổ tay tra cứu tài liệu nguồn Google NotebookLM.",
-          "Mức 3: Đã sử dụng kết hợp bộ công cụ toàn diện: Mô hình ngôn ngữ + Kho pháp luật NotebookLM + Công cụ tạo Slide/Sơ đồ quy trình (Gamma AI, Napkin AI, Canva AI) + Tạo Trợ lý riêng (Custom GPTs / Claude Projects / Gemini Gems).",
-          "Mức 4: Làm chủ hệ sinh thái công cụ ở Mức 3 đồng thời biết kết nối AI với Google Workspace (Drive, Sheets, Docs, Apps Script) để tự động hóa công việc."
+          "Mức 1: Chưa có tài khoản hoặc mới chỉ dùng 01 công cụ hỏi đáp miễn phí cơ bản (như ChatGPT hoặc Zalo AI) trên điện thoại/máy tính.",
+          "Mức 2: Đã biết dùng kết hợp từ 02 công cụ trở lên (ví dụ: ChatGPT, Google Gemini, Claude) cùng với công cụ Sổ tay tra cứu tài liệu Google NotebookLM.",
+          "Mức 3: Đã sử dụng kết hợp nhiều loại công cụ chuyên biệt: Công cụ soạn văn bản (ChatGPT/Gemini/Claude) + Sổ tay tra cứu luật (NotebookLM) + Công cụ làm Slide báo cáo và vẽ sơ đồ tự động (Gamma, Napkin, Canva).",
+          "Mức 4: Sử dụng thành thạo tất cả các công cụ ở Mức 3 và biết kết nối AI với hệ thống Google Drive, Google Sheets, Google Docs để tự động hóa công việc."
         ]
       },
       {
         id: 3,
-        title: "Câu 3 [TC1]. Khi gặp một nghiệp vụ mới hoặc văn bản quy định mới phân cấp về đơn vị, phản xạ giải quyết công việc của anh/chị là gì?",
+        title: "Câu 3. Khi gặp một công việc mới hoặc một văn bản quy định mới phân cấp về đơn vị, cách làm thường xuyên nhất của anh/chị là gì?",
         options: [
-          "Mức 1: Làm thủ công hoàn toàn (tự tìm đọc từng trang văn bản giấy/mạng) hoặc chỉ gõ 1 câu hỏi ngắn lên ChatGPT xem câu trả lời chung chung.",
-          "Mức 2: Tải văn bản Nghị định/Thông tư gốc từ Cổng thông tin Chính phủ về máy, nạp vào NotebookLM hoặc đính kèm vào câu lệnh chuẩn để yêu cầu AI trích xuất quy trình, thẩm quyền và thành phần hồ sơ.",
-          "Mức 3: Nạp bổ sung văn bản mới vào Kho tri thức (Knowledge Base) của Trợ lý AI chuyên môn (AI Agent) để cập nhật công cụ tra cứu và xuất phiếu kiểm soát hồ sơ chuẩn cho cả bộ phận.",
-          "Mức 4: Cập nhật văn bản mới vào AI Agent đồng thời tự động cập nhật biểu mẫu kiểm soát và quy trình xử lý liên thông trên hệ thống bảng tính/tài liệu dùng chung của đơn vị."
+          "Mức 1: Tự tìm văn bản giấy hoặc lên mạng đọc thủ công từ đầu đến cuối, hoặc chỉ gõ 1 câu hỏi ngắn lên ChatGPT để xem câu trả lời tham khảo.",
+          "Mức 2: Tải đúng file văn bản Nghị định/Thông tư gốc từ Cổng thông tin Chính phủ về máy, sau đó đưa file đó vào AI để yêu cầu tóm tắt quy trình, thẩm quyền ký và thành phần hồ sơ.",
+          "Mức 3: Đưa văn bản mới vào 'Kho tài liệu pháp luật cố định' đã tạo sẵn trên AI để tra cứu chính xác điều khoản và xuất ngay phiếu kiểm soát hồ sơ chuẩn cho cả bộ phận.",
+          "Mức 4: Cập nhật văn bản mới vào Trợ lý AI của phòng, đồng thời tự động cập nhật biểu mẫu kiểm soát và quy trình xử lý trên bảng tính dùng chung của đơn vị."
         ]
       },
       {
         id: 4,
-        title: "Câu 4 [TC1]. Trạng thái hoặc mong muốn lớn nhất hiện tại của anh/chị khi ứng dụng AI vào công việc nhà nước là gì?",
+        title: "Câu 4. Mong muốn lớn nhất hiện tại của anh/chị khi tham gia khóa đào tạo ứng dụng AI này là gì?",
         options: [
-          "Mức 1: Tôi chưa biết bắt đầu từ đâu (hoặc khi hỏi AI thấy trả lời rất chung chung, sai văn phong hành chính) nên muốn học cách dùng cơ bản, đúng quy định và an toàn.",
-          "Mức 2: Tôi đã biết viết câu lệnh chi tiết để AI soạn văn bản, tra cứu luật đúng ý, nhưng mỗi ngày lặp lại việc đó đều phải gõ lại câu lệnh từ đầu nên muốn học cách làm nhanh hơn.",
-          "Mức 3: Tôi đã nắm vững kỹ thuật viết câu lệnh chuẩn và muốn học chuyên sâu cách đóng gói thành các Trợ lý AI (AI Agents) cố định cho từng đầu việc chuyên môn.",
-          "Mức 4: Tôi đã biết tạo Trợ lý AI cơ bản và muốn làm chủ kỹ thuật kết nối đa tác nhân (Multi-Agent), tự động hóa bảng biểu/báo cáo bằng Google Apps Script và quản trị hệ thống AI cho đơn vị."
+          "Mức 1: Tôi chưa biết bắt đầu từ đâu (hoặc khi hỏi AI thấy trả lời rất chung chung, không đúng văn phong hành chính) nên muốn được cầm tay chỉ việc từ cơ bản, đúng quy định và an toàn.",
+          "Mức 2: Tôi đã biết cách giao việc chi tiết để AI soạn văn bản, tra cứu luật đúng ý, nhưng mỗi ngày lặp lại việc đó đều phải gõ lại hướng dẫn từ đầu nên muốn học cách làm nhanh hơn.",
+          "Mức 3: Tôi đã quen dùng AI cho từng việc lẻ và muốn học cách đóng gói thành các 'Trợ lý AI chuyên biệt' (nạp sẵn văn bản luật và biểu mẫu của phòng) để dùng lâu dài.",
+          "Mức 4: Tôi đã biết tạo Trợ lý AI cơ bản và muốn học sâu cách kết nối tự động hóa bảng biểu, tổng hợp báo cáo hàng loạt trên Google Sheets/Docs và quản trị hệ thống cho đơn vị."
         ]
       }
     ]
   },
   {
-    banner: "PHẦN III. TIÊU CHÍ 2 (TC2 - ĐIỂM SÀN BẮT BUỘC): AN TOÀN BẢO MẬT CÔNG VỤ & KIỂM SOÁT 'ẢO GIÁC PHÁP LÝ'",
-    desc: "Đánh giá kỹ năng phân loại dữ liệu Đèn Giao Thông (Xanh - Vàng - Đỏ), ẩn danh hóa thông tin công dân và kiểm chứng căn cứ pháp lý (Chữ C & Chữ E trong khung TCREI - Câu 5 đến Câu 8).",
+    banner: "PHẦN III. TIÊU CHÍ 2 (ĐIỂM SÀN BẮT BUỘC): AN TOÀN BẢO MẬT CÔNG VỤ & KIỂM CHỨNG PHÁP LUẬT",
+    desc: "Đánh giá thói quen bảo vệ dữ liệu cá nhân công dân, bảo mật tài liệu cơ quan và kiểm tra căn cứ pháp lý khi dùng AI (Câu 5 đến Câu 8).",
     questions: [
       {
         id: 5,
-        title: "Câu 5 [TC2 - Bảo mật]. Khi cần dùng AI hỗ trợ tóm tắt hoặc dự thảo văn bản giải quyết một hồ sơ/đơn thư có chứa họ tên, số CCCD, số điện thoại, địa chỉ, số thửa đất của công dân, anh/chị xử lý dữ liệu đầu vào như thế nào?",
+        title: "Câu 5. Khi cần dùng AI hỗ trợ tóm tắt hoặc dự thảo văn bản giải quyết một hồ sơ/đơn thư có chứa họ tên thật, số CCCD, số điện thoại, địa chỉ, số thửa đất của công dân, anh/chị xử lý như thế nào?",
         options: [
-          "Mức 1: Chụp ảnh hoặc copy nguyên văn toàn bộ nội dung đơn thư (còn nguyên tên thật, số CCCD, SĐT) đưa thẳng vào AI công cộng, hoặc không dám dùng AI vì sợ lộ thông tin.",
-          "Mức 2: Luôn thực hiện 'Ẩn danh hóa 3 bước' trước khi đưa vào AI: Thay tên thật bằng [Công dân A], [Công dân B], xóa hoặc thay toàn bộ số CCCD, SĐT, địa chỉ cụ thể bằng ký hiệu [...], chỉ giữ lại tình huống pháp lý.",
-          "Mức 3: Thực hiện ẩn danh hóa đồng thời cài đặt sẵn hàng rào bảo mật (Security Guardrails) trong Chỉ dẫn hệ thống của AI Agent để Agent tự động cảnh báo và từ chối xử lý nếu phát hiện dữ liệu định danh cá nhân.",
-          "Mức 4: Thiết lập quy trình làm sạch dữ liệu tự động trên bảng tính/tài liệu vùng đệm (Sandbox) trước khi kết nối với AI và hướng dẫn, kiểm soát tuân thủ cho các thành viên trong bộ phận."
+          "Mức 1: Chụp ảnh hoặc copy nguyên văn toàn bộ đơn thư (còn nguyên tên thật, số CCCD, SĐT) đưa thẳng vào AI công cộng, hoặc không dám dùng AI vì sợ lộ thông tin.",
+          "Mức 2: Luôn xóa hoặc thay thế thông tin cá nhân trước khi đưa vào AI (đổi tên thật thành [Công dân A], [Công dân B], xóa số CCCD, SĐT, địa chỉ cụ thể), chỉ giữ lại nội dung sự việc.",
+          "Mức 3: Ngoài việc che thông tin cá nhân như Mức 2, tôi còn cài đặt sẵn quy tắc nhắc nhở bảo mật cố định trong Trợ lý AI của mình để không ai vô tình dán dữ liệu nhạy cảm vào.",
+          "Mức 4: Thiết lập bảng tính/tài liệu nháp tự động lọc bỏ thông tin cá nhân trước khi đưa vào AI và hướng dẫn, kiểm soát quy tắc bảo mật cho cả bộ phận."
         ]
       },
       {
         id: 6,
-        title: "Câu 6 [TC2 - Bảo mật]. Anh/chị áp dụng quy tắc phân loại 'Đèn Giao Thông (Vùng Xanh - Vùng Vàng - Vùng Đỏ)' đối với tài liệu cơ quan khi sử dụng AI ở mức độ nào?",
+        title: "Câu 6. Anh/chị phân biệt và xử lý như thế nào giữa tài liệu được phép đưa lên AI và tài liệu tuyệt đối cấm đưa lên AI công cộng?",
         options: [
-          "Mức 1: Chưa phân biệt rõ ranh giới giữa các nhóm tài liệu; chưa nắm chắc danh mục các tài liệu thuộc Vùng Đỏ tuyệt đối cấm đưa lên nền tảng AI công cộng.",
-          "Mức 2: Nắm vững và tuân thủ nghiêm ở cấp độ cá nhân: Đưa trực tiếp văn bản luật công khai (Vùng Xanh); bắt buộc ẩn danh hóa hồ sơ nghiệp vụ (Vùng Vàng); tuyệt đối CẤM tải văn bản Mật, hồ sơ an ninh/quân sự, danh sách gốc chứa CCCD/tài khoản ngân hàng công dân và khóa chữ ký số (Vùng Đỏ).",
-          "Mức 3: Phân loại chuẩn xác kho tài liệu của bộ phận thành 3 vùng Xanh - Vàng - Đỏ để chỉ nạp các tài liệu Vùng Xanh và biểu mẫu đã làm sạch vào Kho tri thức (Knowledge Base) của AI Agent.",
-          "Mức 4: Thiết kế cấu trúc thư mục dữ liệu của đơn vị tách biệt hoàn toàn vùng làm việc với AI (Sandbox Vùng Xanh/Vàng) khỏi hệ thống lưu trữ nội bộ Vùng Đỏ, kèm quy chế kiểm tra chéo."
+          "Mức 1: Chưa phân biệt rõ ranh giới giữa các loại tài liệu; chưa nắm chắc những loại hồ sơ nào tuyệt đối cấm đưa lên các công cụ AI công cộng.",
+          "Mức 2: Nắm vững quy tắc 3 vùng: (1) Văn bản luật công khai thì đưa trực tiếp lên AI; (2) Hồ sơ, đơn thư nghiệp vụ thì phải xóa thông tin cá nhân trước khi đưa lên; (3) Tuyệt đối CẤM đưa văn bản Mật, hồ sơ an ninh/quân sự, danh sách gốc chứa CCCD/tài khoản ngân hàng công dân và mật khẩu/chữ ký số lên AI.",
+          "Mức 3: Đã phân loại rõ ràng kho tài liệu của bộ phận mình để chỉ đưa các văn bản pháp luật công khai và mẫu biểu trống vào kho dữ liệu của Trợ lý AI.",
+          "Mức 4: Tổ chức thư mục làm việc trên máy tính/đám mây của đơn vị tách biệt hoàn toàn giữa thư mục dùng với AI và thư mục lưu trữ nội bộ/bảo mật, có kiểm tra chéo."
         ]
       },
       {
         id: 7,
-        title: "Câu 7 [TC2 - Bảo mật]. Anh/chị đã thiết lập cấu hình kỹ thuật bảo mật trên các tài khoản AI (ChatGPT, Google Gemini, Claude) đang sử dụng ở mức độ nào?",
+        title: "Câu 7. Anh/chị đã cài đặt chế độ bảo mật trên tài khoản ChatGPT, Google Gemini hoặc Claude đang sử dụng ở mức độ nào?",
         options: [
-          "Mức 1: Sử dụng nguyên cài đặt mặc định từ lúc tạo tài khoản; chưa biết cách tắt chế độ thu thập dữ liệu huấn luyện (Data Training) hoặc nghĩ chỉ cần xóa lịch sử chat là đủ.",
-          "Mức 2: Đã chủ động vào phần Cài đặt (Settings -> Data Controls / Activity) trên ChatGPT, Gemini để TẮT (Off) chế độ 'Cải thiện mô hình cho mọi người / Lưu hoạt động' và bật bảo mật 2 lớp (2FA).",
-          "Mức 3: Đã cấu hình khóa thu thập dữ liệu ở Mức 2 đồng thời sử dụng các không gian làm việc cô lập (Claude Projects / Gemini Gems / Custom GPTs chế độ Riêng tư - Only Me) cho công việc chuyên môn.",
-          "Mức 4: Nắm vững cấu hình bảo mật trên mọi nền tảng AI, biết thiết lập phân quyền truy cập an toàn cho các AI Agents dùng chung của đơn vị và hỗ trợ đồng nghiệp cấu hình chuẩn."
+          "Mức 1: Cứ thế sử dụng theo mặc định từ lúc mới tạo tài khoản; chưa biết cách tắt chế độ thu thập dữ liệu của hãng hoặc nghĩ chỉ cần xóa lịch sử trò chuyện là đủ.",
+          "Mức 2: Đã chủ động vào phần Cài đặt (Settings) của ChatGPT, Gemini để TẮT chế độ 'Cho phép hãng lấy dữ liệu câu hỏi để huấn luyện AI' và bật bảo mật 2 lớp cho tài khoản.",
+          "Mức 3: Đã khóa thu thập dữ liệu như Mức 2 và làm việc trong các dự án/trợ lý AI đặt ở chế độ Riêng tư (chỉ mình tôi hoặc nội bộ phòng truy cập).",
+          "Mức 4: Nắm vững cách cài đặt bảo mật trên mọi công cụ AI, biết phân quyền chia sẻ an toàn cho đơn vị và hướng dẫn đồng nghiệp cùng cài đặt."
         ]
       },
       {
         id: 8,
-        title: "Câu 8 [TC2 - Chống ảo giác]. Khi AI trích dẫn các điều khoản Luật, Nghị định, mức xử phạt hoặc thẩm quyền ký trong bản dự thảo, quy trình kiểm chứng (Evaluate) của anh/chị là gì?",
+        title: "Câu 8. Khi AI viết dự thảo văn bản có trích dẫn sẵn số hiệu Điều, Khoản Luật/Nghị định hoặc mức xử phạt, thẩm quyền ký, anh/chị kiểm tra lại bằng cách nào?",
         options: [
-          "Mức 1: Tin tưởng đưa thẳng điều khoản AI viết vào văn bản vì thấy hành văn rất trôi chảy, hoặc chỉ hỏi lại chính công cụ AI đó câu 'Bạn có chắc chắn đúng không?'.",
-          "Mức 2: Luôn mở văn bản quy phạm pháp luật gốc còn hiệu lực (hoặc bấm vào thẻ số trích dẫn [1], [2] trên Google NotebookLM) để đọc kiểm tra tận mắt Điều, Khoản, Điểm và thẩm quyền ký trước khi sử dụng.",
-          "Mức 3: Khóa cứng phạm vi trả lời của AI Agent vào Kho văn bản pháp luật gốc đã nạp (Grounding), cài đặt quy tắc bắt buộc trích dẫn chính xác số hiệu văn bản và báo rõ 'Chưa có trong tài liệu nguồn' nếu ngoài phạm vi.",
-          "Mức 4: Áp dụng quy trình kiểm định 2 lớp: Cho AI Agent đóng vai Cán bộ Tư pháp tự động rà soát bắt lỗi căn cứ pháp lý (Red-Teaming) kết hợp Chốt chặn con người kiểm tra lần cuối theo 05 tiêu chí trước khi trình ký."
+          "Mức 1: Tin tưởng đưa thẳng điều khoản AI viết vào văn bản trình ký vì thấy câu chữ rất trôi chảy, hoặc chỉ hỏi lại AI câu 'Bạn có chắc chắn đúng không?'.",
+          "Mức 2: Luôn mở văn bản Luật/Nghị định gốc còn hiệu lực ra đọc đối chiếu tận mắt từng Điều, Khoản, Điểm và thẩm quyền ký trước khi đưa vào dự thảo.",
+          "Mức 3: Nạp sẵn các file PDF Nghị định gốc vào sổ tay AI (như Google NotebookLM) và cài đặt nguyên tắc ép AI chỉ được trích dẫn từ các file đó (có nút bấm nhảy thẳng tới dòng văn bản gốc để kiểm tra), cấm AI tự suy diễn.",
+          "Mức 4: Áp dụng kiểm tra 2 vòng: Cho một Trợ lý AI đóng vai Cán bộ Pháp chế tự động rà soát bắt lỗi pháp lý trước, sau đó cán bộ chuyên môn và Lãnh đạo kiểm tra lần cuối theo bảng kiểm 05 tiêu chí trước khi ký."
         ]
       }
     ]
   },
   {
-    banner: "PHẦN IV. TIÊU CHÍ 3 (TC3): KỸ NĂNG VIẾT CÂU LỆNH THEO KHUNG TCREI",
-    desc: "Đánh giá kỹ năng áp dụng khung 5 bước TCREI (Task - Context - References - Evaluate - Iterate) để điều khiển AI thực hiện công việc hành chính (Câu 9 đến Câu 12).",
+    banner: "PHẦN IV. TIÊU CHÍ 3: KỸ NĂNG GIAO VIỆC & VIẾT CÂU LỆNH CHO AI (5 BƯỚC CHUẨN)",
+    desc: "Đánh giá cách anh/chị ra đề bài, cung cấp tài liệu mẫu, kiểm tra và yêu cầu AI chỉnh sửa văn bản hành chính (Câu 9 đến Câu 12).",
     questions: [
       {
         id: 9,
-        title: "Câu 9 [TC3 - Chữ T & C]. Khi yêu cầu AI dự thảo một văn bản hành chính (Kế hoạch, Tờ trình, Công văn, Báo cáo...), cách viết câu lệnh (Prompt) thường xuyên của anh/chị đạt mức nào sau đây?",
+        title: "Câu 9. Khi cần yêu cầu AI soạn thảo một văn bản hành chính (như Kế hoạch, Tờ trình, Công văn, Báo cáo...), anh/chị thường giao việc cho AI theo cách nào dưới đây?",
         options: [
-          "Mức 1: Viết câu lệnh ngắn gọn 1–2 dòng chỉ nêu tên văn bản cần viết (Ví dụ: 'Hãy viết cho tôi kế hoạch kiểm tra an toàn thực phẩm tại đơn vị').",
-          "Mức 2: Viết câu lệnh hội tụ đủ khung TCREI cơ bản: Giao rõ [T - Task] Vai trò chuyên môn + Nhiệm vụ + Định dạng chuẩn Nghị định 30/2020/NĐ-CP; [C - Context] Bối cảnh thực tế của đơn vị; [R - References] Căn cứ pháp lý; [E - Evaluate] Ràng buộc không tự bịa số liệu, chỗ thiếu để trong ngoặc vuông [...].",
-          "Mức 3: Sử dụng câu lệnh TCREI nâng cao kết hợp kỹ thuật Chuỗi suy luận (Chain-of-Thought), ép AI phải phân tích qua từng bước logic pháp lý trước khi xuất ra văn bản hoàn chỉnh.",
-          "Mức 4: Chuẩn hóa các câu lệnh TCREI thành bộ thư viện mẫu (Prompt Templates) có gắn các biến số đầu vào [...] để tái sử dụng nhanh và nhúng thẳng vào cấu hình của các AI Agents."
+          "Mức 1: Chỉ gõ 1–2 câu ngắn gọn nêu tên văn bản cần viết (Ví dụ: 'Hãy viết cho tôi kế hoạch kiểm tra an toàn thực phẩm ở phường').",
+          "Mức 2: Giao việc đầy đủ thông tin như giao cho chuyên viên, gồm: (1) Đóng vai cán bộ bộ phận nào, viết loại văn bản gì theo chuẩn Nghị định 30 + (2) Tình huống, số liệu thực tế của đơn vị + (3) Căn cứ pháp lý + (4) Dặn AI không được tự bịa số liệu, chỗ nào thiếu thông tin phải để trống trong ngoặc vuông [...].",
+          "Mức 3: Ngoài việc giao đủ ý như Mức 2, tôi còn yêu cầu AI phải phân tích từng bước lý lẽ, đối chiếu điều kiện pháp lý rõ ràng trước rồi mới được viết thành văn bản dự thảo.",
+          "Mức 4: Tôi đã lập sẵn một bộ 'Mẫu câu giao việc chuẩn' cho từng loại văn bản của bộ phận mình, mỗi lần cần soạn văn bản chỉ cần điền thông tin mới vào chỗ trống [...] là chạy ngay."
         ]
       },
       {
         id: 10,
-        title: "Câu 10 [TC3 - Chữ R (References)]. Để yêu cầu AI soạn văn bản mới có bố cục đề mục, văn phong hành chính và định dạng bảng biểu GIỐNG HỆT 100% truyền thống của cơ quan mình, anh/chị làm cách nào?",
+        title: "Câu 10. Khi muốn AI soạn một Báo cáo hoặc Công văn mới có cách chia đề mục, văn phong hành chính và bảng biểu GIỐNG HỆT 100% với truyền thống của cơ quan mình, anh/chị làm cách nào?",
         options: [
-          "Mức 1: Chỉ mô tả bằng lời (như 'hãy viết đúng văn phong hành chính nhà nước') rồi sau khi AI viết xong thì tự ngồi gõ sửa lại bố cục thủ công.",
-          "Mức 2: Áp dụng kỹ thuật R (References / Few-Shot) cho từng lần làm việc: Đính kèm 01–02 văn bản chuẩn từng ban hành của đơn vị (đã xóa thông tin nhạy cảm) vào câu lệnh để AI học theo cấu trúc trước khi đổ nội dung mới vào.",
-          "Mức 3: Tuyển chọn bộ văn bản mẫu chuẩn mực nhất của từng thể loại (Công văn, Tờ trình, Kế hoạch, Thông báo kết luận) nạp cố định vào Kho tri thức (Knowledge Base) của AI Agent để Agent luôn xuất đúng khuôn mẫu cơ quan mà không cần tải lại file mỗi ngày.",
-          "Mức 4: Kết hợp AI Agent đã nạp văn bản mẫu với hệ thống trộn văn bản tự động trên Google Docs/Word để sinh hàng loạt văn bản chuẩn thể thức Nghị định 30/2020/NĐ-CP trực tiếp từ bảng dữ liệu."
+          "Mức 1: Chỉ dặn bằng lời là 'Hãy viết đúng văn phong hành chính nhà nước', sau khi AI viết xong thì tự ngồi gõ sửa lại bố cục thủ công.",
+          "Mức 2: Mỗi lần làm việc, tôi đính kèm 01–02 văn bản chuẩn từng ban hành của cơ quan (đã xóa thông tin nhạy cảm) vào cửa sổ chat để AI nhìn theo mẫu đó mà viết báo cáo mới.",
+          "Mức 3: Tôi chọn lọc bộ văn bản mẫu chuẩn nhất của cơ quan (Công văn, Tờ trình, Kế hoạch, Báo cáo, Thông báo kết luận) nạp cố định một lần vào 'Trợ lý AI riêng' để lần nào nó cũng tự động viết đúng khuôn mẫu cơ quan mà không phải tải lại file.",
+          "Mức 4: Kết hợp Trợ lý AI đã nạp sẵn văn bản mẫu với công cụ trộn văn bản tự động trên Word / Google Docs để xuất hàng loạt văn bản chuẩn thể thức từ bảng danh sách."
         ]
       },
       {
         id: 11,
-        title: "Câu 11 [TC3 - Chữ E & I (Evaluate & Iterate)]. Khi bản nháp đầu tiên do AI tạo ra chưa hoàn toàn đúng ý (ví dụ: căn cứ hơi dài hoặc giải pháp chưa sát thẩm quyền), anh/chị xử lý như thế nào?",
+        title: "Câu 11. Khi bản nháp đầu tiên do AI viết ra chưa hoàn toàn ưng ý (ví dụ: phần căn cứ hơi dài dòng hoặc giải pháp chưa sát thực tế địa phương), anh/chị xử lý thế nào?",
         options: [
-          "Mức 1: Bỏ cuộc quay về tự gõ tay từ đầu, hoặc mở một cửa sổ chat mới tinh gõ lại câu lệnh cũ xem may rủi AI có viết khác đi không.",
-          "Mức 2: Thực hiện đúng bước Evaluate (Đánh giá chỉ rõ điểm chưa đạt) và Iterate (Ra lệnh tinh chỉnh nối tiếp ngay trong luồng chat) để AI sửa từng mục cho đến khi hoàn thiện 100%.",
-          "Mức 3: Sau khi Iterate ra kết quả hoàn hảo, biết đúc kết ngay các yêu cầu chỉnh sửa đó để cập nhật ngược lại vào câu lệnh gốc (hoặc System Instructions của AI Agent) giúp các lần chạy sau chuẩn ngay từ lượt đầu tiên.",
-          "Mức 4: Sử dụng kỹ thuật Meta-Prompting và kiểm thử nhiều kịch bản đầu vào để tối ưu hóa độ ổn định của câu lệnh/Agent cho toàn bộ phận cùng dùng."
+          "Mức 1: Bỏ cuộc quay về tự gõ tay từ đầu, hoặc mở một cửa sổ mới gõ lại đúng câu hỏi cũ xem may rủi AI có viết khác đi không.",
+          "Mức 2: Đọc rà soát bản nháp, chỉ rõ từng điểm chưa đạt và gõ yêu cầu nối tiếp ngay trong cuộc trò chuyện đó (Ví dụ: 'Hãy rút gọn mục căn cứ chỉ giữ lại Điều... và bổ sung bảng phân công nhiệm vụ') để AI sửa lại cho đến khi hoàn chỉnh.",
+          "Mức 3: Sau khi yêu cầu AI sửa được bản văn bản ưng ý, tôi lưu lại luôn các lưu ý chỉnh sửa đó vào câu lệnh mẫu (hoặc cài vào Trợ lý AI) để những lần sau AI viết chuẩn ngay từ lượt đầu tiên.",
+          "Mức 4: Biết dùng chính AI để tự hoàn thiện câu lệnh mẫu và chạy thử trên nhiều tình huống hồ sơ khó để công cụ hoạt động ổn định cho cả phòng cùng dùng."
         ]
       },
       {
         id: 12,
-        title: "Câu 12 [TC3 - Phản biện 2 chiều]. Anh/chị áp dụng kỹ thuật điều khiển AI tự kiểm tra và phản biện lỗi (Self-Critique / Role-Play) ở mức độ nào?",
+        title: "Câu 12. Để phát hiện sớm lỗi sai thể thức văn bản (Nghị định 30/2020/NĐ-CP) hoặc lỗi vượt thẩm quyền trước khi trình Lãnh đạo ký, anh/chị có biết cách cho AI 'tự kiểm tra, bắt lỗi chính nó' không?",
         options: [
-          "Mức 1: Chưa từng dùng kỹ thuật phản biện; AI xuất ra bản nháp thế nào thì chỉ đọc bản nháp đó.",
-          "Mức 2: Biết ra lệnh nối tiếp yêu cầu AI đọc soát lại bản nháp vừa viết theo danh sách các tiêu chí kiểm tra thể thức Nghị định 30/2020/NĐ-CP và lỗi chính tả.",
-          "Mức 3: Thiết kế câu lệnh 'Phản biện 2 vai' trong cùng 1 quy trình: Yêu cầu AI đóng vai [Chuyên viên] soạn dự thảo -> chuyển sang vai [Cán bộ Pháp chế/Thẩm định] tự vạch lỗi thẩm quyền, căn cứ, thể thức -> tự sửa lỗi để xuất bản cuối cùng.",
-          "Mức 4: Xây dựng một AI Agent chuyên trách làm 'Trợ lý Thẩm định & Kiểm duyệt Đỏ (Red-Team Agent)' độc lập để kiểm tra chéo sản phẩm đầu ra của các Agent soạn thảo khác."
+          "Mức 1: Chưa từng làm việc này; AI viết ra bản nháp thế nào thì chỉ đọc bản nháp đó.",
+          "Mức 2: Sau khi AI viết xong dự thảo, biết gõ thêm lệnh yêu cầu AI tự đọc soát lại xem có sai chính tả, sai thể thức Nghị định 30 hay thiếu mục nào không.",
+          "Mức 3: Biết cách giao cho AI đóng 2 vai nối tiếp nhau trong cùng 1 lần chạy: Vai 1 (Chuyên viên) soạn xong dự thảo ➔ Vai 2 (Cán bộ Tư pháp & Văn thư) tự động vào vạch lỗi thẩm quyền, căn cứ, thể thức ➔ Tự sửa lại thành bản hoàn chỉnh cuối cùng.",
+          "Mức 4: Tạo riêng một 'Trợ lý AI chuyên Thẩm định & Bắt lỗi' độc lập (đã nạp sẵn bộ quy chuẩn kiểm tra) để rà soát chéo tất cả văn bản dự thảo trước khi trình ký."
         ]
       }
     ]
   },
   {
-    banner: "PHẦN V. TIÊU CHÍ 4 (TC4): KHAI THÁC KHO PHÁP LUẬT (NOTEBOOKLM) & XỬ LÝ ĐA PHƯƠNG THỨC",
-    desc: "Đánh giá kỹ năng làm chủ Google NotebookLM, xử lý bảng tính Excel/KPI, gỡ băng cuộc họp và tạo Slide/Lưu đồ trực quan (Câu 13 đến Câu 16).",
+    banner: "PHẦN V. TIÊU CHÍ 4: TRA CỨU KHO LUẬT, XỬ LÝ BẢNG TÍNH EXCEL, GỠ BĂNG HỌP & LÀM SLIDE BÁO CÁO",
+    desc: "Đánh giá kỹ năng áp dụng AI vào 05 công việc thiết yếu hàng ngày tại cơ quan (Câu 13 đến Câu 16).",
     questions: [
       {
         id: 13,
-        title: "Câu 13 [TC4 - NotebookLM]. Mức độ thành thạo của anh/chị đối với công cụ Google NotebookLM trong tra cứu văn bản quy phạm pháp luật và hồ sơ nghiệp vụ là gì?",
+        title: "Câu 13. Đối với việc dùng công cụ Sổ tay AI (như Google NotebookLM) để quản lý và tra cứu hàng chục văn bản Luật, Nghị định, Thông tư dài hàng trăm trang, anh/chị đã làm được đến mức nào?",
         options: [
-          "Mức 1: Chưa từng nghe nói đến Google NotebookLM hoặc mới chỉ biết tên nhưng chưa từng tự tạo sổ tay tài liệu nào.",
-          "Mức 2: Đã biết tạo sổ tay trên NotebookLM, tải các file PDF Luật, Nghị định, Thông tư lên để hỏi đáp tra cứu điều khoản có gắn trích dẫn nguồn [1], [2] và tóm tắt tài liệu dài.",
-          "Mức 3: Biết tổ chức hệ thống Sổ tay Pháp lý NotebookLM phân loại khoa học theo từng lĩnh vực chuyên môn, kết hợp tạo Sơ đồ tư duy (Mindmap), Bảng đối chiếu quy định và Bộ câu hỏi thường gặp (FAQ) từ tài liệu nguồn.",
-          "Mức 4: Quản trị và chia sẻ các Sổ tay Pháp lý NotebookLM dùng chung cho toàn đơn vị, đồng thời kết nối đầu ra chuẩn xác từ NotebookLM làm nguồn tham chiếu (R) cho chuỗi AI Agents soạn thảo và thẩm định."
+          "Mức 1: Tôi chưa từng nghe nói đến công cụ Google NotebookLM hoặc mới chỉ nghe tên nhưng chưa từng tự dùng thử.",
+          "Mức 2: Tôi đã biết tạo sổ tay trên NotebookLM, tải các file PDF Luật, Nghị định gốc lên để hỏi đáp tra cứu điều khoản (có nút bấm xem tận dòng văn bản gốc) và tóm tắt văn bản dài.",
+          "Mức 3: Tôi đã biết lập các Sổ tay Pháp luật phân loại theo từng mảng việc chuyên môn, biết bấm tạo Sơ đồ tư duy (Mindmap), Bảng đối chiếu quy định và Bộ câu hỏi hướng dẫn thủ tục từ tài liệu gốc.",
+          "Mức 4: Tôi thiết lập và chia sẻ bộ Sổ tay Pháp luật dùng chung cho toàn đơn vị, đồng thời dùng kết quả trích xuất chính xác từ đó để đưa sang cho Trợ lý AI soạn thảo văn bản."
         ]
       },
       {
         id: 14,
-        title: "Câu 14 [TC4 - Bảng tính Excel & KPI]. Khi cần làm sạch dữ liệu, viết công thức Excel/Google Sheets phức tạp (tổng hợp báo cáo từ nhiều nguồn, lọc trùng danh sách, tính điểm KPI theo Nghị định 335/2025/NĐ-CP), anh/chị sử dụng AI ở mức độ nào?",
+        title: "Câu 14. Khi phải tổng hợp số liệu báo cáo từ nhiều nguồn bị lệch định dạng, lọc danh sách trùng lặp hoặc viết công thức Excel phức tạp (như tính tỷ lệ %, tính điểm KPI hàng tháng), anh/chị dùng AI hỗ trợ thế nào?",
         options: [
-          "Mức 1: Tính toán và dò lọc thủ công từng dòng vì không nhớ hàm Excel, hoặc phải nhờ cán bộ kế toán/thống kê làm hộ.",
-          "Mức 2: Biết mô tả cấu trúc các cột bảng tính bằng lời tiếng Việt (theo khung TCREI) để yêu cầu AI viết hộ chính xác công thức hàm (SUMIFS, XLOOKUP, COUNTIFS, IF...) rồi copy dán vào Excel.",
-          "Mức 3: Biết tải bảng số liệu (đã ẩn danh hóa) vào chế độ Phân tích dữ liệu (Data Analysis) của AI để tự động chuẩn hóa định dạng, phát hiện dòng lệch/trùng bất thường, vẽ biểu đồ và viết đoạn nhận xét xu hướng tăng/giảm cho báo cáo.",
-          "Mức 4: Thiết lập bảng tính thông minh kết nối AI/Apps Script để tự động gom số liệu từ các biểu mẫu (Google Forms/Sheets), tự động tính điểm KPI hàng tháng và cảnh báo màu đỏ các chỉ tiêu trễ hạn."
+          "Mức 1: Tự ngồi bấm máy tính tay và dò từng dòng thủ công vì không nhớ hàm Excel, hoặc phải nhờ kế toán/thống kê làm hộ.",
+          "Mức 2: Biết mô tả tên các cột trong bảng Excel bằng lời tiếng Việt để nhờ AI viết hộ công thức hàm (như hàm cộng có điều kiện, hàm dò tìm, lọc trùng...) rồi copy dán vào bảng tính của mình.",
+          "Mức 3: Biết tải file bảng tính (đã xóa thông tin nhạy cảm) vào AI để AI tự động làm sạch định dạng ngày tháng/số tiền, chỉ ra các dòng bị lệch/trùng bất thường, vẽ biểu đồ và viết luôn đoạn nhận xét tăng/giảm cho báo cáo.",
+          "Mức 4: Thiết lập bảng tính thông minh kết nối AI để tự động gom số liệu từ các biểu mẫu trực tuyến về bảng tổng hợp chung, tự động tính điểm KPI và bôi đỏ cảnh báo các việc sắp quá hạn."
         ]
       },
       {
         id: 15,
-        title: "Câu 15 [TC4 - Âm thanh & Ảnh OCR]. Đối với công việc gỡ băng ghi âm cuộc họp để làm Thông báo kết luận và số hóa các tài liệu giấy scan/chụp ảnh bị lỗi font, anh/chị thực hiện như thế nào?",
+        title: "Câu 15. Khi cần chuyển băng ghi âm một cuộc họp dài thành Thông báo kết luận cuộc họp, hoặc cần lấy chữ từ ảnh chụp/file scan văn bản giấy cũ để chỉnh sửa, anh/chị làm cách nào?",
         options: [
-          "Mức 1: Nghe lại toàn bộ file ghi âm để gõ tay từng câu và tự gõ lại toàn bộ văn bản giấy scan/chụp ảnh.",
-          "Mức 2: Biết đưa ảnh chụp văn bản vào AI để chuyển ảnh thành chữ có thể chỉnh sửa (OCR) và dùng công cụ chuyển giọng nói thành văn bản (Speech-to-Text), sau đó dùng câu lệnh TCREI để AI tóm tắt thành Biên bản/Thông báo kết luận họp.",
-          "Mức 3: Xây dựng được một AI Agent chuyên trách 'Thư ký Cuộc họp & Số hóa Hồ sơ': Chỉ cần thả bản gỡ băng thô hoặc ảnh chụp biên bản viết tay vào là Agent tự động xuất ra Thông báo kết luận chuẩn Nghị định 30/2020/NĐ-CP kèm bảng phân công đầu mối và thời hạn.",
-          "Mức 4: Tự động hóa luồng sau cuộc họp: Từ bản kết luận đã được Lãnh đạo duyệt, hệ thống tự động trích xuất danh sách nhiệm vụ đưa vào bảng theo dõi tiến độ trên Google Sheets và gửi thông báo nhắc lịch cho từng bộ phận."
+          "Mức 1: Nghe lại toàn bộ băng ghi âm để gõ tay từng câu và tự ngồi gõ lại từ đầu các trang văn bản giấy chụp ảnh.",
+          "Mức 2: Biết đưa ảnh chụp văn bản vào AI để lấy chữ ra file Word (không phải gõ lại) và biết dùng công cụ chuyển file ghi âm cuộc họp thành chữ, sau đó nhờ AI tóm tắt thành Biên bản họp.",
+          "Mức 3: Đã tạo sẵn một Trợ lý AI chuyên làm 'Thư ký cuộc họp': Chỉ cần đưa bản chữ gỡ băng ghi âm hoặc ảnh chụp ghi chép cuộc họp vào là tự động xuất ra dự thảo Thông báo kết luận đúng mẫu Nghị định 30 kèm bảng giao việc.",
+          "Mức 4: Sau khi có Thông báo kết luận họp, hệ thống tự động trích xuất danh sách đầu việc được giao đưa vào bảng theo dõi tiến độ của đơn vị và tự động nhắc lịch đến hạn."
         ]
       },
       {
         id: 16,
-        title: "Câu 16 [TC4 - Slide & Lưu đồ]. Khi cần chuyển một Báo cáo Word dài 15 trang thành bộ Slide thuyết trình phục vụ hội nghị và vẽ Sơ đồ quy trình thủ tục hành chính niêm yết công khai, anh/chị làm cách nào?",
+        title: "Câu 16. Khi Lãnh đạo yêu cầu chuyển một Báo cáo Word dài 15 trang thành bộ Slide trình chiếu (PowerPoint) phục vụ hội nghị hoặc vẽ Sơ đồ các bước giải quyết thủ tục hành chính để niêm yết công khai, anh/chị thực hiện thế nào?",
         options: [
-          "Mức 1: Mở PowerPoint/Word tự copy-paste từng đoạn chữ và tự vẽ từng ô vuông, mũi tên thủ công mất nhiều giờ.",
-          "Mức 2: Biết dùng câu lệnh TCREI trên ChatGPT/Gemini/Claude để rút gọn báo cáo dài thành dàn ý nội dung từng Slide và cấu trúc các bước quy trình.",
-          "Mức 3: Kết hợp nhuần nhuyễn AI ngôn ngữ với AI thị giác: Đưa dàn ý vào Gamma AI / Canva AI để sinh trọn bộ Slide trình chiếu chuyên nghiệp trong 1 phút, và dùng Napkin AI biến văn bản thành Sơ đồ quy trình (Flowchart) trực quan.",
-          "Mức 4: Đóng gói quy trình xuất bản đa định dạng: Từ 01 báo cáo gốc, sử dụng chuỗi công cụ AI tạo đồng bộ Bộ Slide báo cáo + Sơ đồ Infographic + Bản tin phát thanh (Audio) chỉ trong 15 phút."
+          "Mức 1: Mở PowerPoint/Word tự copy-paste từng đoạn chữ và tự vẽ từng ô vuông, mũi tên thủ công mất cả buổi hoặc cả ngày.",
+          "Mức 2: Biết nhờ ChatGPT/Gemini rút gọn báo cáo Word dài thành dàn ý ngắn gọn cho từng trang Slide rồi mình copy sang PowerPoint/Canva.",
+          "Mức 3: Biết đưa báo cáo/dàn ý vào công cụ tạo Slide tự động (như Gamma AI / Canva AI) để xuất ra bộ Slide hoàn chỉnh trong 1 phút, và dùng công cụ vẽ sơ đồ tự động (như Napkin AI) biến đoạn chữ thành Sơ đồ quy trình trực quan.",
+          "Mức 4: Từ 01 văn bản báo cáo gốc, biết kết hợp chuỗi công cụ AI để xuất bản đồng bộ trong 15 phút gồm: Bộ Slide báo cáo hội nghị + Sơ đồ quy trình niêm yết + Bản tin phát thanh tuyên truyền."
         ]
       }
     ]
   },
   {
-    banner: "PHẦN VI. TIÊU CHÍ 5 (TC5): TƯ DUY ĐÓNG GÓI AI AGENTS & TỰ ĐỘNG HÓA QUY TRÌNH",
-    desc: "Đánh giá năng lực chuyển hóa câu lệnh TCREI thành các Trợ lý AI chuyên biệt (Level 3) và tự động hóa quy trình công việc theo luồng Đọc -> Đề xuất -> Kiểm tra -> Ghi (Level 4) (Câu 17 đến Câu 20).",
+    banner: "PHẦN VI. TIÊU CHÍ 5: ĐÓNG GÓI 'TRỢ LÝ AI RIÊNG' & TỰ ĐỘNG HÓA QUY TRÌNH CÔNG VIỆC",
+    desc: "Đánh giá khả năng tạo sẵn các Trợ lý AI cố định cho từng đầu việc lặp lại và tự động hóa trên Google Drive / Sheets / Docs (Câu 17 đến Câu 20).",
     questions: [
       {
         id: 17,
-        title: "Câu 17 [TC5 - Chuyển hóa TCREI thành AI Agent]. Đối với các công việc chuyên môn lặp đi lặp lại hàng ngày (kiểm tra hồ sơ Một cửa, rà soát thể thức văn bản NĐ 30, thẩm định điều kiện đất đai/hộ tịch/chứng từ...), anh/chị đã biết cách 'đóng băng' câu lệnh TCREI thành Trợ lý AI cố định chưa?",
+        title: "Câu 17. Đối với những công việc lặp đi lặp lại hàng ngày theo đúng một quy trình (như kiểm tra thành phần hồ sơ Một cửa, soát thể thức công văn, thẩm định hồ sơ đất đai/hộ tịch/chứng từ...), anh/chị đã biết cách tạo sẵn một 'Trợ lý AI cố định' để không phải gõ lại hướng dẫn mỗi ngày chưa?",
         options: [
-          "Mức 1: Mỗi lần cần làm việc lại mở một cửa sổ chat mới và gõ lại câu lệnh từ đầu, chưa lưu trữ câu lệnh chuẩn.",
-          "Mức 2: Đã biết lưu các câu lệnh TCREI mẫu ra file Word/Sổ tay cá nhân; mỗi khi cần làm thì copy-paste câu lệnh vào khung chat và đính kèm lại file tài liệu tham chiếu.",
-          "Mức 3: Đã biết sử dụng tính năng Custom GPTs (ChatGPT), Projects (Claude) hoặc Gems (Google Gemini) để đóng gói cố định cụm [T + C + E] vào Chỉ dẫn hệ thống (System Instructions) và nạp sẵn cụm [R] vào Kho tri thức (Knowledge Base) tạo thành AI Agent dùng lâu dài.",
-          "Mức 4: Đã tự tay xây dựng, tinh chỉnh hoàn chỉnh nhiều AI Agents chuyên biệt cho các đầu việc của bộ phận và phân quyền chia sẻ cho đồng nghiệp cùng sử dụng ổn định."
+          "Mức 1: Chưa biết cách làm; mỗi lần cần giải quyết việc gì thì tôi lại mở cửa sổ chat mới và gõ lại câu hỏi từ đầu.",
+          "Mức 2: Tôi lưu sẵn các câu lệnh mẫu ra một file Word trên máy tính; mỗi ngày cần làm việc thì mở file Word ra copy-paste vào cửa sổ chat và tải lại file tài liệu đính kèm.",
+          "Mức 3: Tôi đã biết dùng tính năng tạo Trợ lý riêng (như Custom GPTs trên ChatGPT, Projects trên Claude hoặc Gems trên Google Gemini) để cài cố định quy tắc làm việc và nạp sẵn các văn bản luật/biểu mẫu của phòng vào đó, mỗi ngày chỉ cần đưa hồ sơ mới vào là chạy.",
+          "Mức 4: Tôi đã tự tay tạo hoàn chỉnh nhiều Trợ lý AI chuyên biệt cho các đầu việc của bộ phận mình và chia sẻ đường link cho đồng nghiệp trong phòng cùng sử dụng."
         ]
       },
       {
         id: 18,
-        title: "Câu 18 [TC5 - Cấu trúc System Instructions của Agent]. Khi thiết lập phần Chỉ dẫn hệ thống (System Instructions) cho một AI Agent công vụ, anh/chị nắm vững cấu trúc thiết kế ở mức độ nào?",
+        title: "Câu 18. Khi cài đặt phần 'Hướng dẫn quy tắc làm việc cố định' cho một Trợ lý AI của phòng ban, anh/chị biết cách thiết lập đến mức nào?",
         options: [
-          "Mức 1: Chưa từng thiết lập Chỉ dẫn hệ thống cho AI Agent hoặc chỉ biết đặt tên và viết 1 câu mô tả ngắn.",
-          "Mức 2: Hiểu rằng cần đưa vai trò và yêu cầu đầu ra cơ bản vào phần hướng dẫn chung của cuộc trò chuyện.",
-          "Mức 3: Thiết kế được bản Chỉ dẫn hệ thống (System Prompt) chuẩn mực gồm 4 khối: (1) Role & Task (Vai trò & Mẫu đầu ra NĐ 30) + (2) Context & Knowledge Priority (Ưu tiên tuyệt đối tài liệu trong Kho tri thức) + (3) Security Guardrails (Hàng rào bảo mật) + (4) Self-Check Rubric (Bộ tiêu chí tự kiểm tra).",
-          "Mức 4: Làm chủ kỹ thuật thiết kế System Instructions phức tạp có phân nhánh tình huống (If-Then Workflows), xử lý ngoại lệ và kiểm thử chịu tải (Red-Teaming) để Agent không bị đánh lừa bởi các hồ sơ lỗi."
+          "Mức 1: Tôi chưa từng tạo Trợ lý AI riêng hoặc chỉ mới biết đặt tên và viết 1 câu mô tả ngắn.",
+          "Mức 2: Tôi biết viết vài dòng dặn dò chung về vai trò và giọng văn hành chính cho công cụ AI.",
+          "Mức 3: Tôi biết viết bản quy tắc làm việc chặt chẽ gồm đủ 4 phần: (1) Vai trò & Mẫu văn bản đầu ra + (2) Quy tắc chỉ được lấy thông tin từ Kho văn bản luật đã nạp, không có phải báo rõ + (3) Quy tắc bảo mật thông tin công dân + (4) Các bước tự kiểm tra lỗi trước khi trả kết quả.",
+          "Mức 4: Tôi biết thiết kế quy tắc xử lý cho cả các tình huống hồ sơ phức tạp/ngoại lệ và biết cách đưa các hồ sơ 'bẫy' vào thử nghiệm để đảm bảo Trợ lý AI không bao giờ trả lời sai quy định."
         ]
       },
       {
         id: 19,
-        title: "Câu 19 [TC5 - Tự động hóa Google Workspace & Apps Script]. Đối với quy trình thu thập số liệu báo cáo định kỳ, trộn văn bản hàng loạt (Thông báo, Giấy mời, Quyết định) và theo dõi hạn xử lý hồ sơ, anh/chị đã ứng dụng tự động hóa đến mức nào?",
+        title: "Câu 19. Đối với công việc hàng tháng phải thu thập số liệu báo cáo từ nhiều đầu mối (các thôn/tổ dân phố/đơn vị), tổng hợp vào 1 bảng chung, in hàng loạt Thông báo/Giấy mời/Quyết định theo mẫu và theo dõi hạn hồ sơ, anh/chị đã áp dụng tự động hóa đến đâu?",
         options: [
-          "Mức 1: Thu thập qua văn bản giấy hoặc tin nhắn Zalo rời rạc, sau đó tự ngồi gõ nhập liệu lại vào Excel và sửa tay từng văn bản trên Word.",
-          "Mức 2: Đã biết tạo Google Forms / Google Sheets dùng chung để thu thập dữ liệu và dùng AI hỗ trợ viết công thức tổng hợp cơ bản.",
-          "Mức 3: Biết kết hợp bảng tính Google Sheets/Excel với công cụ Trộn văn bản hoặc tiện ích AI để xuất nhanh nhiều văn bản theo biểu mẫu chuẩn.",
-          "Mức 4: Biết dùng AI viết mã Google Apps Script gắn trực tiếp vào Google Sheets/Docs/Drive để tự động gom dữ liệu báo cáo về bảng tổng hợp, tự động sinh hàng loạt file văn bản chuẩn và tự động bôi đỏ/gửi thông báo cảnh báo hồ sơ sắp trễ hạn."
+          "Mức 1: Thu thập qua văn bản giấy hoặc tin nhắn Zalo rời rạc, sau đó tự ngồi gõ nhập lại từng con số vào Excel và sửa tay từng giấy mời/thông báo trên Word.",
+          "Mức 2: Đã biết tạo biểu mẫu trực tuyến (Google Forms) hoặc bảng tính dùng chung (Google Sheets) để các đầu mối tự nhập số liệu và dùng AI hỗ trợ viết hàm cộng tổng.",
+          "Mức 3: Biết kết hợp bảng danh sách Excel/Google Sheets với công cụ Trộn văn bản để xuất nhanh hàng chục Giấy mời, Thông báo, Quyết định đúng mẫu.",
+          "Mức 4: Biết nhờ AI viết đoạn mã tự động (Google Apps Script) gắn vào bảng tính Google Sheets/Docs để hệ thống tự động gom báo cáo về bảng tổng hợp, tự động sinh hàng loạt file văn bản chuẩn và tự động bôi đỏ/nhắc lịch các hồ sơ sắp đến hạn giải quyết."
         ]
       },
       {
         id: 20,
-        title: "Câu 20 [TC5 - Quản trị Luồng Tự động hóa]. Khi triển khai các công cụ AI và tự động hóa quy trình trong cơ quan nhà nước, anh/chị áp dụng nguyên tắc kiểm soát 'Đọc -> Đề xuất -> Kiểm tra -> Ghi' (Human-in-the-loop) như thế nào?",
+        title: "Câu 20. Khi ứng dụng AI và tự động hóa vào công việc cơ quan, anh/chị áp dụng quy trình kiểm soát nào để đảm bảo AI chỉ là công cụ hỗ trợ, còn con người nắm quyền kiểm duyệt cuối cùng?",
         options: [
-          "Mức 1: Chưa nắm rõ nguyên tắc kiểm soát luồng dữ liệu khi dùng AI (hoặc phó mặc hoàn toàn cho AI, hoặc ngại không dám dùng công cụ số).",
-          "Mức 2: Thực hiện kiểm soát thủ công ở cấp độ cá nhân: Đọc kỹ và sửa lại toàn bộ bản nháp do AI tạo ra trên máy tính trước khi in trình ký.",
-          "Mức 3: Thiết kế rõ các Chốt chặn Con người (HITL Gates) trong quy trình dùng AI Agent của bộ phận: Phân định rõ khâu nào AI tổng hợp/đề xuất và khâu nào công chức chuyên môn bắt buộc phải xác minh thực địa, đối chiếu chứng từ gốc.",
-          "Mức 4: Thiết lập kiến trúc vận hành an toàn toàn diện trên đám mây: Kết nối AI qua thư mục vùng đệm (Sandbox Folder); AI chỉ được phép ĐỌC dữ liệu đã làm sạch và xuất ĐỀ XUẤT ra cột/file nháp; chỉ khi công chức và Lãnh đạo KIỂM TRA xác nhận mới kích hoạt lệnh GHI vào hồ sơ chính thức."
+          "Mức 1: Chưa có quy trình kiểm soát rõ ràng (hoặc phó mặc cho AI viết sao dùng vậy, hoặc quá lo ngại nên không dám dùng công cụ số).",
+          "Mức 2: Kiểm soát cá nhân trên từng văn bản: Sau khi AI tạo xong bản nháp trên màn hình, tôi đọc kỹ và sửa lại trên Word trước khi in trình ký.",
+          "Mức 3: Phân định rõ các bước kiểm soát trong bộ phận: Khâu nào cho phép AI tổng hợp/soạn nháp và khâu nào cán bộ chuyên môn bắt buộc phải xác minh thực tế, kiểm tra chứng từ gốc.",
+          "Mức 4: Thiết lập luồng làm việc an toàn 4 bước 'Đọc ➔ Đề xuất ➔ Kiểm tra ➔ Ghi': AI chỉ được đọc dữ liệu đã làm sạch ở thư mục nháp và xuất kết quả ra cột Đề xuất; chỉ khi cán bộ chuyên môn và Lãnh đạo bấm xác nhận Kiểm tra đạt yêu cầu thì dữ liệu mới được Ghi vào hồ sơ chính thức."
         ]
       }
     ]
@@ -626,6 +731,15 @@ const sectionsData = [
 ];
 
 let lastEvaluation = null;
+
+function switchTab(tab) {
+  const isSurvey = tab === 'survey';
+  document.getElementById('surveyView').style.display = isSurvey ? 'block' : 'none';
+  document.getElementById('adminPanel').style.display = isSurvey ? 'none' : 'block';
+  document.getElementById('tabSurveyBtn').classList.toggle('active', isSurvey);
+  document.getElementById('tabAdminBtn').classList.toggle('active', !isSurvey);
+  if (!isSurvey) renderRecordsTable();
+}
 
 function renderQuestions() {
   const container = document.getElementById('questionsContainer');
@@ -652,6 +766,9 @@ function renderQuestions() {
     });
   });
   container.innerHTML = html;
+  updateSavedCount();
+  const savedHook = localStorage.getItem('ai_survey_webhook') || '';
+  document.getElementById('webhookUrl').value = savedHook;
 }
 
 function onSelectOption(qId, val) {
@@ -680,6 +797,19 @@ function avgRange(start, end) {
     sum += el ? parseInt(el.value, 10) : 0;
   }
   return sum / (end - start + 1);
+}
+
+function getRecords() {
+  try {
+    return JSON.parse(localStorage.getItem('ai_survey_records') || '[]');
+  } catch (e) {
+    return [];
+  }
+}
+
+function updateSavedCount() {
+  const recs = getRecords();
+  document.getElementById('countBadge').innerText = recs.length;
 }
 
 document.getElementById('surveyForm').addEventListener('submit', function(e) {
@@ -736,26 +866,33 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
 
   // Thuật toán 3 Cổng lọc
   let levelTitle = '';
+  let classShort = '';
   let classDesc = '';
 
   if (roleGroup.indexOf('Nhóm 1') !== -1) {
     levelTitle = `NHÓM LÃNH ĐẠO & QUẢN TRỊ (Điểm TB kỹ thuật: ${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP CHUYÊN ĐỀ LÃNH ĐẠO & QUẢN TRỊ (01 Ngày) — Tập trung làm chủ chữ T (Giao việc bằng giọng nói) & chữ E (Evaluate – Thẩm định tờ trình trong 3 phút trước khi ký), Điều hành số liệu KT-XH trong 60 giây & Giám sát KPI theo Nghị định 335/2025/NĐ-CP.`;
+    classShort = `LỚP LÃNH ĐẠO & QUẢN TRỊ (01 Ngày)`;
+    classDesc = `Xếp vào: LỚP CHUYÊN ĐỀ LÃNH ĐẠO & QUẢN TRỊ (01 Ngày) — Tập trung kỹ năng Giao việc nhanh bằng giọng nói & Thẩm định tờ trình của cấp dưới trong 3 phút trước khi ký, Đọc báo cáo số liệu trong 60 giây & Giám sát KPI theo Nghị định 335/2025/NĐ-CP.`;
   } else if (avgAll <= 1.35) {
-    levelTitle = `HIỆN TẠI: LEVEL 1A – Nhập môn / Thụ động (${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Học Bảo mật Đèn Giao Thông, Khung câu lệnh TCREI & Kho pháp luật NotebookLM qua 05 Việc Thiết Yếu (Có bố trí trợ giảng kèm thao tác tạo tài khoản đầu giờ).`;
+    levelTitle = `HIỆN TẠI: LEVEL 1A – Nhập môn / Chưa quen công cụ (${avgAll.toFixed(2)}/4.00)`;
+    classShort = `LỚP 1: NỀN TẢNG (Nhóm 1A - Kèm tạo tài khoản)`;
+    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Học Bảo mật Đèn Giao Thông, Quy tắc 5 Bước Giao Việc Cho AI & Sổ tay Pháp luật NotebookLM qua 05 Việc Thiết Yếu (Có trợ giảng kèm thao tác tạo tài khoản đầu giờ).`;
   } else if (avgAll <= 1.85 || tc2 < 2.0) {
     levelTitle = `HIỆN TẠI: LEVEL 1B – Sử dụng Tự phát / Cần chuẩn hóa Bảo mật (${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Tập trung chuẩn hóa kỷ luật Bảo mật Đèn Giao Thông (Xanh - Vàng - Đỏ), bỏ thói quen hỏi tự phát 1 dòng chuyển sang viết lệnh chuẩn TCREI & tra cứu luật trên NotebookLM.`;
+    classShort = `LỚP 1: NỀN TẢNG (Nhóm 1B - Chuẩn hóa Bảo mật & 5 Bước Giao Việc)`;
+    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Tập trung chuẩn hóa kỷ luật Bảo mật Đèn Giao Thông (Xanh - Vàng - Đỏ), bỏ thói quen hỏi 1 câu ngắn chuyển sang Quy tắc 5 Bước Giao Việc Cho AI & tra cứu luật trên NotebookLM.`;
   } else if (avgAll >= 3.45 && tc2 >= 3.0 && tc5 >= 3.0) {
     levelTitle = `HIỆN TẠI: LEVEL 4 – Làm chủ Tự động hóa & Hạt nhân CĐS (${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (Vai trò HẠT NHÂN CHUYỂN ĐỔI SỐ / NHÓM TRƯỞNG). Cùng chuyên gia đóng gói Bộ 07 AI Agents chuẩn của đơn vị, thiết lập luồng tự động hóa Google Workspace/Apps Script và hỗ trợ kỹ thuật cho đồng nghiệp.`;
+    classShort = `LỚP 3: CHUYÊN SÂU (Hạt nhân Level 4 - Nhóm trưởng)`;
+    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (Vai trò HẠT NHÂN CHUYỂN ĐỔI SỐ / NHÓM TRƯỞNG). Cùng chuyên gia đóng gói Bộ 07 Trợ lý AI chuẩn của đơn vị, thiết lập luồng tự động hóa Google Sheets/Docs và hỗ trợ kỹ thuật cho đồng nghiệp.`;
   } else if (avgAll >= 2.75 && tc2 >= 2.5 && tc5 >= 2.5) {
-    levelTitle = `HIỆN TẠI: LEVEL 3 – Kiến tạo AI Agents (${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (02 Ngày: Đưa từ Level 3 lên Level 4). Học thiết kế chuỗi Đa tác nhân (Multi-Agent Workflows), kết nối tự động hóa báo cáo trên Google Drive/Sheets/Docs bằng Apps Script theo luồng Đọc -> Đề xuất -> Kiểm tra -> Ghi.`;
+    levelTitle = `HIỆN TẠI: LEVEL 3 – Đã biết dựng Trợ lý AI riêng (${avgAll.toFixed(2)}/4.00)`;
+    classShort = `LỚP 3: CHUYÊN SÂU (Hệ thống Trợ lý AI & Tự động hóa)`;
+    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (02 Ngày: Đưa từ Level 3 lên Level 4). Học thiết kế chuỗi Trợ lý AI phối hợp và kết nối tự động hóa báo cáo trên Google Drive/Sheets/Docs theo luồng Đọc -> Đề xuất -> Kiểm tra -> Ghi.`;
   } else {
-    levelTitle = `HIỆN TẠI: LEVEL 2 – Ứng dụng Chuẩn hóa TCREI việc lẻ (${avgAll.toFixed(2)}/4.00)`;
-    classDesc = `Xếp vào: LỚP 2 – CHƯƠNG TRÌNH NÂNG CAO (02 Ngày: Đưa từ Level 2 lên Level 3). Học kỹ thuật Advanced TCREI (Chain-of-Thought, Few-Shot, Phản biện 2 vai) và tự tay đóng gói các câu lệnh lặp lại thành 07 AI Agents cố định cho bộ phận.`;
+    levelTitle = `HIỆN TẠI: LEVEL 2 – Đã biết giao việc chuẩn cho từng việc lẻ (${avgAll.toFixed(2)}/4.00)`;
+    classShort = `LỚP 2: NÂNG CAO (Đóng gói 07 Trợ lý AI cố định)`;
+    classDesc = `Xếp vào: LỚP 2 – CHƯƠNG TRÌNH NÂNG CAO (02 Ngày: Đưa từ Level 2 lên Level 3). Học kỹ thuật giao việc chuyên sâu (Phản biện 2 vai, nạp văn bản mẫu) và tự tay đóng gói các công việc lặp lại thành 07 Trợ lý AI cố định cho bộ phận.`;
   }
 
   document.getElementById('resLevelTitle').innerText = levelTitle;
@@ -766,16 +903,72 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
     fullName, unitName, phone, email, roleGroup,
     tc1: tc1.toFixed(2), tc2: tc2.toFixed(2), tc3: tc3.toFixed(2),
     tc4: tc4.toFixed(2), tc5: tc5.toFixed(2), avgAll: avgAll.toFixed(2),
-    levelTitle, classDesc
+    levelTitle, classShort, classDesc
   };
+
+  // Lưu vào bảng tổng hợp
+  const recs = getRecords();
+  recs.push(lastEvaluation);
+  localStorage.setItem('ai_survey_records', JSON.stringify(recs));
+  updateSavedCount();
+
+  // Nếu có cài đặt Google Sheets Webhook thì bắn tự động về Google Sheets
+  const hook = localStorage.getItem('ai_survey_webhook');
+  if (hook) {
+    fetch(hook, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lastEvaluation)
+    }).catch(() => {});
+  }
 
   const resSec = document.getElementById('resultSection');
   resSec.style.display = 'block';
   resSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
+function renderRecordsTable() {
+  const recs = getRecords();
+  const tbody = document.getElementById('recordsTableBody');
+  if (!recs.length) {
+    tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:18px; color:#64748b;">Chưa có phiếu khảo sát nào được gửi trên thiết bị này.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = recs.map((r, i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td>${r.timestamp}</td>
+      <td><strong>${r.fullName}</strong></td>
+      <td>${r.unitName}</td>
+      <td>${r.phone}</td>
+      <td>${r.roleGroup}</td>
+      <td>${r.tc1}</td>
+      <td>${r.tc2}</td>
+      <td>${r.tc3}</td>
+      <td>${r.tc4}</td>
+      <td>${r.tc5}</td>
+      <td><strong>${r.avgAll}</strong></td>
+      <td><span style="color:#15803d; font-weight:700;">${r.classShort || r.levelTitle}</span></td>
+    </tr>
+  `).join('');
+}
+
+function saveWebhook() {
+  const val = document.getElementById('webhookUrl').value.trim();
+  localStorage.setItem('ai_survey_webhook', val);
+  alert(val ? 'Đã lưu kết nối Google Sheets thành công!' : 'Đã xóa kết nối Google Sheets.');
+}
+
+function clearAllRecords() {
+  if (!confirm('Bạn có chắc muốn xóa danh sách kết quả lưu tạm trên trình duyệt này?')) return;
+  localStorage.removeItem('ai_survey_records');
+  updateSavedCount();
+  renderRecordsTable();
+}
+
 function resetSurvey() {
-  if (!confirm('Anh/chị có chắc muốn xóa các lựa chọn hiện tại để làm lại từ đầu?')) return;
+  if (!confirm('Anh/chị có chắc muốn xóa các lựa chọn hiện tại để làm lại phiếu mới?')) return;
   document.getElementById('surveyForm').reset();
   document.querySelectorAll('.option-label').forEach(el => el.classList.remove('selected'));
   document.querySelectorAll('.question-card').forEach(el => el.classList.remove('unanswered'));
@@ -784,27 +977,52 @@ function resetSurvey() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function exportCSV() {
+function copyZaloSummary() {
   if (!lastEvaluation) return;
+  const text =
+    `[KẾT QUẢ KHẢO SÁT MỨC ĐỘ THÀNH THỤC AI]\n` +
+    `• Họ và tên: ${lastEvaluation.fullName}\n` +
+    `• Đơn vị: ${lastEvaluation.unitName} (${lastEvaluation.roleGroup})\n` +
+    `• SĐT Zalo: ${lastEvaluation.phone}\n` +
+    `• Điểm TB Chung: ${lastEvaluation.avgAll}/4.00 (TC1:${lastEvaluation.tc1} | Bảo mật TC2:${lastEvaluation.tc2} | Giao việc TC3:${lastEvaluation.tc3} | Luật/Excel TC4:${lastEvaluation.tc4} | Trợ lý AI TC5:${lastEvaluation.tc5})\n` +
+    `➔ XẾP LỚP: ${lastEvaluation.classShort}`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Đã copy tóm tắt kết quả! Anh/chị có thể dán (Paste) gửi qua Zalo cho Ban Tổ Chức.');
+  });
+}
+
+function exportSingleCSV() {
+  if (!lastEvaluation) return;
+  downloadCSV([lastEvaluation], `Ket_Qua_Khao_Sat_AI_${lastEvaluation.fullName.replace(/\s+/g, '_')}.csv`);
+}
+
+function exportAllCSV() {
+  const recs = getRecords();
+  if (!recs.length) {
+    alert('Chưa có dữ liệu khảo sát nào để xuất!');
+    return;
+  }
+  downloadCSV(recs, `Tong_Hop_Xep_Lop_AI_Vien_Chuc_${new Date().toISOString().slice(0,10)}.csv`);
+}
+
+function downloadCSV(rowsData, filename) {
   const headers = [
     "Thời gian", "Họ và tên", "Đơn vị", "Số điện thoại", "Email", "Nhóm vị trí",
-    "Điểm TC1", "Điểm TC2 (Bảo mật)", "Điểm TC3 (TCREI)", "Điểm TC4 (NotebookLM)", "Điểm TC5 (AI Agents)",
-    "Điểm TB Chung (Thang 4)", "Xếp loại Level", "Phân lớp Đào tạo"
+    "Điểm TC1", "Điểm TC2 (Bảo mật)", "Điểm TC3 (Giao việc 5 bước)", "Điểm TC4 (Luật/Excel)", "Điểm TC5 (Trợ lý AI)",
+    "Điểm TB Chung (Thang 4)", "Xếp loại Level", "Lớp Đào Tạo Được Xếp"
   ];
-  const row = [
-    lastEvaluation.timestamp, lastEvaluation.fullName, lastEvaluation.unitName,
-    lastEvaluation.phone, lastEvaluation.email, lastEvaluation.roleGroup,
-    lastEvaluation.tc1, lastEvaluation.tc2, lastEvaluation.tc3,
-    lastEvaluation.tc4, lastEvaluation.tc5, lastEvaluation.avgAll,
-    lastEvaluation.levelTitle, lastEvaluation.classDesc
-  ].map(v => `"${String(v).replace(/"/g, '""')}"`);
+  const csvRows = rowsData.map(r => [
+    r.timestamp, r.fullName, r.unitName, r.phone, r.email, r.roleGroup,
+    r.tc1, r.tc2, r.tc3, r.tc4, r.tc5, r.avgAll,
+    r.levelTitle, r.classShort || r.classDesc
+  ].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(","));
 
-  const csvContent = "\uFEFF" + headers.join(",") + "\n" + row.join(",");
+  const csvContent = "\uFEFF" + headers.join(",") + "\n" + csvRows.join("\n");
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `Ket_Qua_Khao_Sat_AI_${lastEvaluation.fullName.replace(/\s+/g, '_')}.csv`;
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
