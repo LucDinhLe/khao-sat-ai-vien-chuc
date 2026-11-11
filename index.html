@@ -488,8 +488,15 @@
   <!-- TAB 2: DASHBOARD TỔNG HỢP THEO PHƯỜNG & NHÓM CHƯƠNG TRÌNH -->
   <div id="adminPanel">
     <h2 style="margin-top:0; color: var(--primary);">📊 DASHBOARD QUẢN TRỊ: THỐNG KÊ THEO PHƯỜNG/XÃ & NHÓM CHƯƠNG TRÌNH</h2>
+    <div style="background:#f0fdf4; border:1px solid #86efac; border-radius:8px; padding:14px 16px; margin-bottom:16px;">
+      <div style="font-weight:700; color:#166534; margin-bottom:8px;">✅ Đã khởi tạo Thư mục & Bảng tính Quản trị trên Google Drive (lifecoach.lucdinh@gmail.com):</div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <a href="https://drive.google.com/drive/folders/1eehOWdStxJkfK5154rFP45pBPe8kDPGE" target="_blank" class="btn btn-primary" style="text-decoration:none; display:inline-block; padding:9px 16px; font-size:13.5px;">📁 Mở Thư mục "Đào tạo Cán bộ Phường/ xã"</a>
+        <a href="https://docs.google.com/spreadsheets/d/1H_WIOoKqG6vA4oTfMTPyIaj1sIGA7C1ql9KCvwZUFU8/edit" target="_blank" class="btn btn-teal" style="text-decoration:none; display:inline-block; padding:9px 16px; font-size:13.5px;">📊 Mở Bảng tính & Dashboard Google Sheets</a>
+      </div>
+    </div>
     <p style="font-size: 14px; color: #334155;">
-      • <strong>Kết nối tự động với Google Drive (Google Sheets) của anh:</strong> Dán đường link Web App Google Drive (`https://script.google.com/macros/s/.../exec`) vào ô dưới đây. Mọi kết quả người làm khảo sát gửi lên sẽ tự động đổ thẳng vào Google Sheets trong Drive của anh kèm Dashboard phân tích.
+      • <strong>Đồng bộ tự động từ Web về Bảng tính Google Sheets:</strong> Trong file Google Sheets ở trên, vào <em>Tiện ích mở rộng ➔ Apps Script</em>, dán mã file <code>KET_NOI_GOOGLE_DRIVE_DASHBOARD.gs</code> (đã có sẵn trong thư mục Drive) và bấm <em>Triển khai ➔ Ứng dụng web</em>, sau đó dán đường link <code>https://script.google.com/macros/s/.../exec</code> vào ô dưới đây:
     </p>
     <div style="display:flex; gap:10px; margin-bottom: 18px; flex-wrap:wrap;">
       <input type="url" id="webhookUrl" class="text-input" style="flex:1; min-width:260px;" placeholder="Dán link Google Drive Web App (https://script.google.com/macros/s/.../exec) vào đây..." />
