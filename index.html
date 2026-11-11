@@ -34,6 +34,7 @@
       display: flex;
       gap: 10px;
       margin-bottom: 14px;
+      flex-wrap: wrap;
     }
     .tab-btn {
       padding: 10px 18px;
@@ -277,14 +278,24 @@
     .class-callout {
       background: #f0fdf4;
       border-left: 6px solid #16a34a;
-      padding: 18px 20px;
-      border-radius: 6px;
+      padding: 20px 22px;
+      border-radius: 8px;
       margin: 18px 0;
     }
-    .class-callout h3 {
-      margin: 0 0 6px;
+    .class-callout .summary-maturity {
+      font-size: 15.5px;
+      color: #0f172a;
+      margin: 0 0 12px;
+      line-height: 1.6;
+    }
+    .class-callout .program-fit {
+      font-size: 15.5px;
       color: #15803d;
-      font-size: 18.5px;
+      margin: 0;
+      line-height: 1.6;
+      background: #dcfce7;
+      padding: 12px 16px;
+      border-radius: 6px;
     }
     .warn-callout {
       background: #fef2f2;
@@ -305,15 +316,34 @@
       padding: 26px;
       box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
     }
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      margin: 16px 0 22px;
+    }
+    .dash-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .dash-box h4 {
+      margin: 0 0 10px;
+      color: var(--primary);
+      font-size: 15px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 6px;
+    }
     .data-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 14px;
+      margin-top: 10px;
       font-size: 13.5px;
     }
     .data-table th, .data-table td {
       border: 1px solid #cbd5e1;
-      padding: 9px 10px;
+      padding: 8px 10px;
       text-align: left;
     }
     .data-table th {
@@ -329,7 +359,7 @@
   <!-- Chuyển đổi giữa Phiếu Khảo Sát và Bảng Quản Trị Kết Quả -->
   <div class="top-tabs">
     <button type="button" class="tab-btn active" id="tabSurveyBtn" onclick="switchTab('survey')">📝 Phiếu Khảo Sát Viên Chức</button>
-    <button type="button" class="tab-btn" id="tabAdminBtn" onclick="switchTab('admin')">📊 Bảng Tổng Hợp Kết Quả & Xếp Lớp (<span id="countBadge">0</span>)</button>
+    <button type="button" class="tab-btn" id="tabAdminBtn" onclick="switchTab('admin')">📊 Dashboard Theo Phường & Nhóm Chương Trình (<span id="countBadge">0</span>)</button>
   </div>
 
   <!-- TAB 1: PHIẾU KHẢO SÁT -->
@@ -344,7 +374,7 @@
     <div class="header-card">
       <h1>KHẢO SÁT MỨC ĐỘ THÀNH THỤC AI DÀNH CHO VIÊN CHỨC NHÀ NƯỚC</h1>
       <p>Chào mừng anh/chị tham gia khảo sát đánh giá mức độ sẵn sàng và kỹ năng ứng dụng Trí tuệ nhân tạo (AI) phục vụ công việc chuyên môn.</p>
-      <p>• <strong>Mục đích:</strong> Tìm hiểu thực trạng sử dụng công cụ của từng cán bộ, công chức, viên chức để <strong>xếp vào đúng lớp đào tạo phù hợp với trình độ</strong> (tránh tình trạng người mới bị ngợp, người đã biết thấy nhàm chán).</p>
+      <p>• <strong>Mục đích:</strong> Tìm hiểu thực trạng sử dụng công cụ của từng cán bộ, công chức, viên chức để <strong>tư vấn chương trình đào tạo phù hợp nhất với trình độ và nhu cầu công việc</strong>.</p>
       <p>• <strong>Lưu ý:</strong> Đây không phải là bài thi đánh giá thi đua. Mỗi câu hỏi mô tả 04 cách làm thực tế từ cơ bản đến nâng cao (Mức 1 đến Mức 4), anh/chị vui lòng chọn cách phản ánh <strong>ĐÚNG NHẤT</strong> thói quen hiện tại của mình.</p>
       <div class="guide-box">
         💡 <strong>Gợi ý nguyên tắc "5 Bước Giao Việc Chuẩn Cho AI" (Ai cũng làm được):</strong><br/>
@@ -353,13 +383,13 @@
       <div class="badge-bar">
         <span class="badge">⏱ Thời lượng: ~8–10 phút</span>
         <span class="badge">📊 Thang đo: 4 Mức độ (1.00 – 4.00)</span>
-        <span class="badge">🎯 Tự động chấm điểm & phân lớp ngay sau khi gửi</span>
+        <span class="badge">🎯 Nhận kết quả đánh giá & gợi ý chương trình ngay sau khi gửi</span>
       </div>
     </div>
 
     <form id="surveyForm" novalidate>
       <div class="section-banner">PHẦN I. THÔNG TIN ĐỊNH DANH & VỊ TRÍ CÔNG TÁC</div>
-      <div class="section-desc">Thông tin này dùng để xếp bàn thực hành theo nhóm nghiệp vụ và phân lớp đào tạo sát với công việc hằng ngày của anh/chị.</div>
+      <div class="section-desc">Thông tin này giúp Ban Tổ Chức tổng hợp nhu cầu theo địa bàn và gợi ý chương trình đào tạo sát với công việc hằng ngày của anh/chị.</div>
 
       <div class="question-card">
         <div class="q-title">1. Họ và tên cán bộ, công chức, viên chức <span class="req">*</span></div>
@@ -367,18 +397,18 @@
       </div>
 
       <div class="question-card">
-        <div class="q-title">2. Đơn vị công tác (Ghi rõ Phòng/Ban/Bộ phận và Tên Cơ quan / UBND Xã, Phường) <span class="req">*</span></div>
-        <input type="text" id="unitName" class="text-input" placeholder="Ví dụ: Bộ phận Tư pháp - Hộ tịch, UBND phường..." required />
+        <div class="q-title">2. Đơn vị công tác (Ghi rõ tên Phường / Xã) <span class="req">*</span></div>
+        <input type="text" id="unitName" class="text-input" placeholder="Ví dụ: Phường Bến Nghé (hoặc Xã Đông Anh)..." required />
       </div>
 
       <div class="question-card">
-        <div class="q-title">3. Số điện thoại (Zalo nhận tài liệu & thông báo lớp học) <span class="req">*</span></div>
+        <div class="q-title">3. Số điện thoại (Zalo nhận tài liệu & thông báo khóa học) <span class="req">*</span></div>
         <input type="tel" id="phone" class="text-input" placeholder="Nhập số điện thoại Zalo..." required />
       </div>
 
       <div class="question-card">
-        <div class="q-title">4. Địa chỉ Email công vụ hoặc cá nhân</div>
-        <input type="email" id="email" class="text-input" placeholder="Nhập địa chỉ email (nếu có)..." />
+        <div class="q-title">4. Địa chỉ Email</div>
+        <input type="email" id="email" class="text-input" placeholder="Nhập địa chỉ email..." />
       </div>
 
       <div class="question-card">
@@ -399,13 +429,13 @@
 
       <div class="actions-bar">
         <button type="button" class="btn btn-secondary" onclick="resetSurvey()">Làm mới phiếu</button>
-        <button type="submit" class="btn btn-primary">GỬI KHẢO SÁT & XEM KẾT QUẢ XẾP LỚP ➔</button>
+        <button type="submit" class="btn btn-primary" id="submitBtn">HOÀN THÀNH KHẢO SÁT & XEM ĐÁNH GIÁ ➔</button>
       </div>
     </form>
 
     <!-- KẾT QUẢ CÁ NHÂN TỨC THÌ -->
     <div id="resultSection">
-      <h2 style="margin-top:0; color: var(--primary);">KẾT QUẢ ĐÁNH GIÁ MỨC ĐỘ THÀNH THỤC AI & PHÂN LỚP ĐÀO TẠO</h2>
+      <h2 style="margin-top:0; color: var(--primary);">KẾT QUẢ ĐÁNH GIÁ MỨC ĐỘ THÀNH THỤC AI & CHƯƠNG TRÌNH PHÙ HỢP</h2>
       <p id="resIdentity" style="font-size: 15px; color: #334155;"></p>
 
       <div class="result-grid">
@@ -436,38 +466,70 @@
       </div>
 
       <div id="securityWarning" class="warn-callout">
-        <strong>⚠️ LƯU Ý VỀ AN TOÀN BẢO MẬT CÔNG VỤ (Điểm Bảo mật &lt; 2.00):</strong> Điểm kỹ năng bảo mật thông tin công dân và kiểm chứng điều khoản pháp luật của anh/chị đang dưới mức an toàn (2.00/4.00). Hệ thống ưu tiên xếp anh/chị vào học kỹ năng Bảo mật Đèn Giao Thông & Giao việc chuẩn cho AI trước khi học tạo Trợ lý AI tự động.
+        <strong>💡 Lưu ý nhỏ về An toàn Bảo mật Công vụ:</strong> Để đảm bảo an toàn thông tin tuyệt đối khi làm việc với dữ liệu công dân và văn bản hành chính, chương trình đào tạo sẽ hỗ trợ anh/chị củng cố kỹ năng phân loại dữ liệu Đèn Giao Thông (Xanh - Vàng - Đỏ) và kiểm chứng điều khoản pháp luật gốc.
       </div>
 
       <div class="class-callout">
-        <div style="font-size: 13.5px; font-weight:700; color:#166534; text-transform:uppercase;">Mức độ hiện tại & Lớp đào tạo được đề xuất:</div>
-        <h3 id="resLevelTitle">LEVEL ...</h3>
-        <p id="resClassDesc" style="margin: 6px 0 0; font-size: 15px; color: #1e293b;"></p>
+        <div style="font-size: 13.5px; font-weight:700; color:#166534; text-transform:uppercase; margin-bottom:8px;">Nhận xét tổng quan & Khuyến nghị chương trình đào tạo:</div>
+        <p class="summary-maturity" id="resMaturitySummary"></p>
+        <p class="program-fit" id="resProgramFit"></p>
       </div>
+
+      <p id="syncStatusMsg" style="font-size:13.5px; color:#0d9488; font-weight:600; margin-top:8px;"></p>
 
       <div class="actions-bar" style="margin-top: 18px;">
         <button type="button" class="btn btn-teal" onclick="exportSingleCSV()">📥 Tải Phiếu Kết Quả Cá Nhân (Excel / CSV)</button>
-        <button type="button" class="btn btn-secondary" onclick="copyZaloSummary()">📋 Copy Kết Quả Gửi Zalo Ban Tổ Chức</button>
+        <button type="button" class="btn btn-secondary" onclick="copyZaloSummary()">📋 Copy Kết Quả Gửi Zalo</button>
         <button type="button" class="btn btn-secondary" onclick="window.print()">🖨 In Phiếu (PDF)</button>
       </div>
     </div>
   </div>
 
-  <!-- TAB 2: BẢNG TỔNG HỢP KẾT QUẢ & XẾP LỚP (DÀNH CHO BAN TỔ CHỨC) -->
+  <!-- TAB 2: DASHBOARD TỔNG HỢP THEO PHƯỜNG & NHÓM CHƯƠNG TRÌNH -->
   <div id="adminPanel">
-    <h2 style="margin-top:0; color: var(--primary);">📊 BẢNG TỔNG HỢP KẾT QUẢ KHẢO SÁT & PHÂN LỚP ĐÀO TẠO</h2>
+    <h2 style="margin-top:0; color: var(--primary);">📊 DASHBOARD QUẢN TRỊ: THỐNG KÊ THEO PHƯỜNG/XÃ & NHÓM CHƯƠNG TRÌNH</h2>
     <p style="font-size: 14px; color: #334155;">
-      • Toàn bộ các phiếu khảo sát đã gửi trên thiết bị này được lưu tự động tại bảng dưới đây.<br/>
-      • <strong>Kết nối tự động về Google Sheets trung tâm của Ban Tổ Chức:</strong> Dán đường link Google Apps Script Web App vào ô dưới đây để mọi phiếu khảo sát tự động đổ thẳng về file Google Sheets của anh.
+      • <strong>Kết nối tự động với Google Drive (Google Sheets) của anh:</strong> Dán đường link Web App Google Drive (`https://script.google.com/macros/s/.../exec`) vào ô dưới đây. Mọi kết quả người làm khảo sát gửi lên sẽ tự động đổ thẳng vào Google Sheets trong Drive của anh kèm Dashboard phân tích.
     </p>
-    <div style="display:flex; gap:10px; margin-bottom: 16px; flex-wrap:wrap;">
-      <input type="url" id="webhookUrl" class="text-input" style="flex:1; min-width:260px;" placeholder="Dán link Google Sheets Web App (https://script.google.com/macros/s/.../exec) nếu muốn đồng bộ đám mây..." />
-      <button type="button" class="btn btn-primary" onclick="saveWebhook()">Lưu kết nối Google Sheets</button>
+    <div style="display:flex; gap:10px; margin-bottom: 18px; flex-wrap:wrap;">
+      <input type="url" id="webhookUrl" class="text-input" style="flex:1; min-width:260px;" placeholder="Dán link Google Drive Web App (https://script.google.com/macros/s/.../exec) vào đây..." />
+      <button type="button" class="btn btn-primary" onclick="saveWebhook()">Lưu kết nối Google Drive</button>
+    </div>
+
+    <!-- 2 BẢNG DASHBOARD TÓM TẮT THEO NHÓM CHƯƠNG TRÌNH & THEO PHƯỜNG/XÃ -->
+    <div class="dash-grid">
+      <div class="dash-box">
+        <h4>1. Thống kê theo Nhóm Chương trình Đào tạo</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Chương trình phù hợp</th>
+              <th>Số lượng</th>
+              <th>Tỷ lệ</th>
+            </tr>
+          </thead>
+          <tbody id="dashByProgramBody"></tbody>
+        </table>
+      </div>
+
+      <div class="dash-box">
+        <h4>2. Thống kê theo Đơn vị (Phường / Xã)</h4>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tên Phường / Xã</th>
+              <th>Số học viên</th>
+              <th>Điểm TB</th>
+            </tr>
+          </thead>
+          <tbody id="dashByWardBody"></tbody>
+        </table>
+      </div>
     </div>
 
     <div style="display:flex; gap:10px; margin-bottom:12px; flex-wrap:wrap;">
       <button type="button" class="btn btn-teal" onclick="exportAllCSV()">📥 Xuất Toàn Bộ Danh Sách Ra File Excel (.CSV)</button>
-      <button type="button" class="btn btn-secondary" onclick="clearAllRecords()">🗑 Xóa danh sách lưu tạm</button>
+      <button type="button" class="btn btn-secondary" onclick="clearAllRecords()">🗑 Xóa dữ liệu lưu tạm trên máy</button>
     </div>
 
     <div style="overflow-x:auto;">
@@ -477,16 +539,16 @@
             <th>STT</th>
             <th>Thời gian</th>
             <th>Họ và tên</th>
-            <th>Đơn vị</th>
+            <th>Phường / Xã</th>
             <th>SĐT Zalo</th>
             <th>Nhóm vị trí</th>
             <th>TC1</th>
-            <th>TC2 (Bảo mật)</th>
-            <th>TC3 (Giao việc)</th>
-            <th>TC4 (Luật/Excel)</th>
-            <th>TC5 (Trợ lý AI)</th>
+            <th>TC2</th>
+            <th>TC3</th>
+            <th>TC4</th>
+            <th>TC5</th>
             <th>ĐTB Chung</th>
-            <th>Lớp Đào Tạo Được Xếp</th>
+            <th>Chương trình Phù hợp</th>
           </tr>
         </thead>
         <tbody id="recordsTableBody"></tbody>
@@ -496,7 +558,9 @@
 </div>
 
 <script>
-// 20 CÂU HỎI ĐÃ ĐƯỢC VIỆT HÓA 100% NGÔN NGỮ HÀNH CHÍNH ĐỜI THƯỜNG (AI ĐỌC CŨNG HIỂU NGAY)
+// Cho phép truyền sẵn link Google Drive Webhook qua tham số URL (?webhook=...) hoặc cài mặc định
+const DEFAULT_GOOGLE_DRIVE_WEBHOOK = "";
+
 const sectionsData = [
   {
     banner: "PHẦN II. TIÊU CHÍ 1: THÓI QUEN TIẾP CẬN & SỬ DỤNG CÔNG CỤ AI",
@@ -545,7 +609,7 @@ const sectionsData = [
     ]
   },
   {
-    banner: "PHẦN III. TIÊU CHÍ 2 (ĐIỂM SÀN BẮT BUỘC): AN TOÀN BẢO MẬT CÔNG VỤ & KIỂM CHỨNG PHÁP LUẬT",
+    banner: "PHẦN III. TIÊU CHÍ 2: AN TOÀN BẢO MẬT CÔNG VỤ & KIỂM CHỨNG PHÁP LUẬT",
     desc: "Đánh giá thói quen bảo vệ dữ liệu cá nhân công dân, bảo mật tài liệu cơ quan và kiểm tra căn cứ pháp lý khi dùng AI (Câu 5 đến Câu 8).",
     questions: [
       {
@@ -738,7 +802,7 @@ function switchTab(tab) {
   document.getElementById('adminPanel').style.display = isSurvey ? 'none' : 'block';
   document.getElementById('tabSurveyBtn').classList.toggle('active', isSurvey);
   document.getElementById('tabAdminBtn').classList.toggle('active', !isSurvey);
-  if (!isSurvey) renderRecordsTable();
+  if (!isSurvey) renderDashboardAndTable();
 }
 
 function renderQuestions() {
@@ -767,7 +831,14 @@ function renderQuestions() {
   });
   container.innerHTML = html;
   updateSavedCount();
-  const savedHook = localStorage.getItem('ai_survey_webhook') || '';
+
+  // Kiểm tra tham số ?webhook=... trên URL hoặc trong localStorage
+  const urlParams = new URLSearchParams(window.location.search);
+  const hookFromUrl = urlParams.get('webhook');
+  if (hookFromUrl) {
+    localStorage.setItem('ai_survey_webhook', hookFromUrl);
+  }
+  const savedHook = localStorage.getItem('ai_survey_webhook') || DEFAULT_GOOGLE_DRIVE_WEBHOOK;
   document.getElementById('webhookUrl').value = savedHook;
 }
 
@@ -821,12 +892,13 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   const roleGroup = document.getElementById('roleGroup').value;
 
   if (!fullName || !unitName || !phone || !roleGroup) {
-    alert('Vui lòng điền đầy đủ Thông tin định danh (Họ tên, Đơn vị, Số điện thoại, Nhóm vị trí công tác) ở Phần I!');
+    alert('Vui lòng điền đầy đủ Thông tin định danh (Họ tên, Phường/Xã, Số điện thoại, Nhóm vị trí công tác) ở Phần I!');
     document.getElementById('fullName').focus();
     return;
   }
 
   let firstUnanswered = null;
+  const answersList = [];
   for (let i = 1; i <= 20; i++) {
     const checked = document.querySelector(`input[name="q${i}"]:checked`);
     const card = document.getElementById(`card_q${i}`);
@@ -835,6 +907,7 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
       if (!firstUnanswered) firstUnanswered = card;
     } else {
       card.classList.remove('unanswered');
+      answersList.push(parseInt(checked.value, 10));
     }
   }
 
@@ -859,68 +932,79 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   document.getElementById('scoreAvg').innerText = avgAll.toFixed(2);
 
   document.getElementById('resIdentity').innerHTML =
-    `<strong>Viên chức:</strong> ${fullName} &nbsp;|&nbsp; <strong>Đơn vị:</strong> ${unitName} &nbsp;|&nbsp; <strong>Nhóm vị trí:</strong> ${roleGroup}`;
+    `<strong>Họ và tên:</strong> ${fullName} &nbsp;|&nbsp; <strong>Đơn vị (Phường/Xã):</strong> ${unitName} &nbsp;|&nbsp; <strong>Vị trí công tác:</strong> ${roleGroup}`;
 
   const warnEl = document.getElementById('securityWarning');
   warnEl.style.display = tc2 < 2.0 ? 'block' : 'none';
 
-  // Thuật toán 3 Cổng lọc
-  let levelTitle = '';
-  let classShort = '';
-  let classDesc = '';
+  // Thuật toán 3 Cổng lọc với lời văn tư vấn chuẩn mực ("Anh/chị đã... Anh/chị phù hợp với chương trình...")
+  let maturitySummary = '';
+  let programFit = '';
+  let programShort = '';
 
   if (roleGroup.indexOf('Nhóm 1') !== -1) {
-    levelTitle = `NHÓM LÃNH ĐẠO & QUẢN TRỊ (Điểm TB kỹ thuật: ${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP LÃNH ĐẠO & QUẢN TRỊ (01 Ngày)`;
-    classDesc = `Xếp vào: LỚP CHUYÊN ĐỀ LÃNH ĐẠO & QUẢN TRỊ (01 Ngày) — Tập trung kỹ năng Giao việc nhanh bằng giọng nói & Thẩm định tờ trình của cấp dưới trong 3 phút trước khi ký, Đọc báo cáo số liệu trong 60 giây & Giám sát KPI theo Nghị định 335/2025/NĐ-CP.`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã có nền tảng nhận thức và tư duy ứng dụng công nghệ trong công tác lãnh đạo, chỉ đạo điều hành (Điểm trung bình khảo sát đạt <strong>${avgAll.toFixed(2)}/4.00</strong>).`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Chuyên đề AI dành cho Lãnh đạo & Quản trị (01 Ngày)</strong> — Tập trung vào kỹ năng giao việc nhanh bằng giọng nói, dùng Trợ lý AI thẩm định tờ trình/dự thảo của cấp dưới trong 3 phút trước khi ký, đọc nhanh báo cáo số liệu trong 60 giây và giám sát KPI theo Nghị định 335/2025/NĐ-CP.`;
+    programShort = `Chương trình Lãnh đạo & Quản trị`;
   } else if (avgAll <= 1.35) {
-    levelTitle = `HIỆN TẠI: LEVEL 1A – Nhập môn / Chưa quen công cụ (${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP 1: NỀN TẢNG (Nhóm 1A - Kèm tạo tài khoản)`;
-    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Học Bảo mật Đèn Giao Thông, Quy tắc 5 Bước Giao Việc Cho AI & Sổ tay Pháp luật NotebookLM qua 05 Việc Thiết Yếu (Có trợ giảng kèm thao tác tạo tài khoản đầu giờ).`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã bước đầu tìm hiểu và tiếp cận với Trí tuệ nhân tạo (AI), hiện đang ở giai đoạn khởi đầu (Mức 1A – Điểm trung bình: <strong>${avgAll.toFixed(2)}/4.00</strong>) để chuẩn bị đưa công nghệ vào hỗ trợ công việc hàng ngày.`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Đào tạo AI Nền tảng & Thực chiến Cơ bản (Nhóm 1A)</strong> — Hướng dẫn cầm tay chỉ việc từ bước thiết lập tài khoản an toàn, nắm vững quy tắc Bảo mật Đèn Giao Thông, áp dụng "5 Bước Giao Việc Chuẩn Cho AI" và Sổ tay Pháp luật NotebookLM để giải quyết 05 công việc thiết yếu hàng ngày.`;
+    programShort = `Chương trình 1: Nền tảng (Nhóm 1A)`;
   } else if (avgAll <= 1.85 || tc2 < 2.0) {
-    levelTitle = `HIỆN TẠI: LEVEL 1B – Sử dụng Tự phát / Cần chuẩn hóa Bảo mật (${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP 1: NỀN TẢNG (Nhóm 1B - Chuẩn hóa Bảo mật & 5 Bước Giao Việc)`;
-    classDesc = `Xếp vào: LỚP 1 – CHƯƠNG TRÌNH NỀN TẢNG (02 Ngày: Đưa từ Level 1 lên Level 2). Tập trung chuẩn hóa kỷ luật Bảo mật Đèn Giao Thông (Xanh - Vàng - Đỏ), bỏ thói quen hỏi 1 câu ngắn chuyển sang Quy tắc 5 Bước Giao Việc Cho AI & tra cứu luật trên NotebookLM.`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã chủ động sử dụng AI để hỏi đáp và hỗ trợ một số công việc cơ bản (Mức 1B – Điểm trung bình: <strong>${avgAll.toFixed(2)}/4.00</strong>), tuy nhiên cần chuẩn hóa thêm quy tắc bảo mật dữ liệu công vụ và cách giao việc có cấu trúc để AI làm chuẩn ngay từ đầu.`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Đào tạo AI Nền tảng & Chuẩn hóa Nghiệp vụ (Nhóm 1B)</strong> — Tập trung chuẩn hóa kỷ luật Bảo mật Đèn Giao Thông (Xanh - Vàng - Đỏ), thành thạo "5 Bước Giao Việc Chuẩn Cho AI" và khóa nguồn văn bản luật trên NotebookLM phục vụ 05 công việc thiết yếu.`;
+    programShort = `Chương trình 1: Nền tảng (Nhóm 1B)`;
   } else if (avgAll >= 3.45 && tc2 >= 3.0 && tc5 >= 3.0) {
-    levelTitle = `HIỆN TẠI: LEVEL 4 – Làm chủ Tự động hóa & Hạt nhân CĐS (${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP 3: CHUYÊN SÂU (Hạt nhân Level 4 - Nhóm trưởng)`;
-    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (Vai trò HẠT NHÂN CHUYỂN ĐỔI SỐ / NHÓM TRƯỞNG). Cùng chuyên gia đóng gói Bộ 07 Trợ lý AI chuẩn của đơn vị, thiết lập luồng tự động hóa Google Sheets/Docs và hỗ trợ kỹ thuật cho đồng nghiệp.`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã đạt mức độ thành thục xuất sắc (Mức 4 – Điểm trung bình: <strong>${avgAll.toFixed(2)}/4.00</strong>), làm chủ toàn diện từ kỹ năng giao việc, xây dựng Trợ lý AI chuyên biệt đến tự động hóa quy trình và kiểm soát an toàn dữ liệu.`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Chuyên sâu & Bồi dưỡng Hạt nhân Chuyển đổi số</strong> — Tham gia làm chủ kỹ thuật tự động hóa nâng cao trên Google Workspace/Apps Script và đồng hành cùng chuyên gia xây dựng, kiểm thử Bộ Trợ lý AI chuẩn dùng chung cho toàn đơn vị.`;
+    programShort = `Chương trình 3: Chuyên sâu (Hạt nhân Level 4)`;
   } else if (avgAll >= 2.75 && tc2 >= 2.5 && tc5 >= 2.5) {
-    levelTitle = `HIỆN TẠI: LEVEL 3 – Đã biết dựng Trợ lý AI riêng (${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP 3: CHUYÊN SÂU (Hệ thống Trợ lý AI & Tự động hóa)`;
-    classDesc = `Xếp vào: LỚP 3 – CHƯƠNG TRÌNH CHUYÊN SÂU (02 Ngày: Đưa từ Level 3 lên Level 4). Học thiết kế chuỗi Trợ lý AI phối hợp và kết nối tự động hóa báo cáo trên Google Drive/Sheets/Docs theo luồng Đọc -> Đề xuất -> Kiểm tra -> Ghi.`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã có mức độ thành thục cao (Mức 3 – Điểm trung bình: <strong>${avgAll.toFixed(2)}/4.00</strong>), sử dụng đa dạng hệ sinh thái công cụ AI (văn bản, bảng tính Excel, sổ tay pháp luật, trình chiếu) và đã có tư duy thiết lập Trợ lý AI riêng.`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Đào tạo AI Chuyên sâu (Hệ thống Trợ lý AI & Tự động hóa Quy trình)</strong> — Tập trung thiết kế chuỗi các Trợ lý AI phối hợp liên hoàn và kết nối tự động hóa báo cáo, trộn văn bản hàng loạt, cảnh báo hạn hồ sơ trên Google Drive/Sheets/Docs theo quy trình Đọc ➔ Đề xuất ➔ Kiểm tra ➔ Ghi.`;
+    programShort = `Chương trình 3: Chuyên sâu (Level 3)`;
   } else {
-    levelTitle = `HIỆN TẠI: LEVEL 2 – Đã biết giao việc chuẩn cho từng việc lẻ (${avgAll.toFixed(2)}/4.00)`;
-    classShort = `LỚP 2: NÂNG CAO (Đóng gói 07 Trợ lý AI cố định)`;
-    classDesc = `Xếp vào: LỚP 2 – CHƯƠNG TRÌNH NÂNG CAO (02 Ngày: Đưa từ Level 2 lên Level 3). Học kỹ thuật giao việc chuyên sâu (Phản biện 2 vai, nạp văn bản mẫu) và tự tay đóng gói các công việc lặp lại thành 07 Trợ lý AI cố định cho bộ phận.`;
+    maturitySummary = `<strong>Đánh giá mức độ thành thục:</strong> Anh/chị đã nắm vững nguyên tắc an toàn bảo mật và biết cách giao việc bài bản cho AI để giải quyết hiệu quả từng đầu việc chuyên môn riêng lẻ (Mức 2 – Điểm trung bình: <strong>${avgAll.toFixed(2)}/4.00</strong>).`;
+    programFit = `<strong>🎯 Anh/chị phù hợp với chương trình:</strong> <strong>Chương trình Đào tạo AI Nâng cao (Đóng gói Trợ lý AI Chuyên biệt)</strong> — Giúp anh/chị nâng cấp kỹ thuật giao việc chuyên sâu (cho AI tự phản biện bắt lỗi, học theo văn bản mẫu của cơ quan) và tự tay đóng gói các công việc lặp lại thành 07 "Trợ lý AI cố định" của phòng ban.`;
+    programShort = `Chương trình 2: Nâng cao (Level 2)`;
   }
 
-  document.getElementById('resLevelTitle').innerText = levelTitle;
-  document.getElementById('resClassDesc').innerText = classDesc;
+  document.getElementById('resMaturitySummary').innerHTML = maturitySummary;
+  document.getElementById('resProgramFit').innerHTML = programFit;
 
   lastEvaluation = {
     timestamp: new Date().toLocaleString('vi-VN'),
     fullName, unitName, phone, email, roleGroup,
     tc1: tc1.toFixed(2), tc2: tc2.toFixed(2), tc3: tc3.toFixed(2),
     tc4: tc4.toFixed(2), tc5: tc5.toFixed(2), avgAll: avgAll.toFixed(2),
-    levelTitle, classShort, classDesc
+    programShort,
+    maturityText: maturitySummary.replace(/<[^>]+>/g, ''),
+    programFitText: programFit.replace(/<[^>]+>/g, ''),
+    answers: answersList
   };
 
-  // Lưu vào bảng tổng hợp
+  // Lưu vào bảng tổng hợp trên trình duyệt
   const recs = getRecords();
   recs.push(lastEvaluation);
   localStorage.setItem('ai_survey_records', JSON.stringify(recs));
   updateSavedCount();
 
-  // Nếu có cài đặt Google Sheets Webhook thì bắn tự động về Google Sheets
-  const hook = localStorage.getItem('ai_survey_webhook');
+  // Tự động gửi dữ liệu về Google Drive (Google Sheets) nếu đã cấu hình Webhook
+  const hook = localStorage.getItem('ai_survey_webhook') || DEFAULT_GOOGLE_DRIVE_WEBHOOK;
+  const syncMsg = document.getElementById('syncStatusMsg');
   if (hook) {
+    syncMsg.innerText = "⏳ Đang đồng bộ kết quả về Google Drive của Ban Tổ Chức...";
     fetch(hook, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(lastEvaluation)
-    }).catch(() => {});
+    }).then(() => {
+      syncMsg.innerText = "✅ Đã lưu tự động kết quả của anh/chị về hệ thống Google Drive của Ban Tổ Chức!";
+    }).catch(() => {
+      syncMsg.innerText = "";
+    });
+  } else {
+    syncMsg.innerText = "";
   }
 
   const resSec = document.getElementById('resultSection');
@@ -928,8 +1012,50 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
   resSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
-function renderRecordsTable() {
+function renderDashboardAndTable() {
   const recs = getRecords();
+  const total = recs.length;
+
+  // 1. Thống kê theo Nhóm Chương trình
+  const progCounts = {};
+  const wardStats = {};
+
+  recs.forEach(r => {
+    const p = r.programShort || 'Chưa phân loại';
+    progCounts[p] = (progCounts[p] || 0) + 1;
+
+    const w = (r.unitName || 'Chưa ghi rõ').trim();
+    if (!wardStats[w]) wardStats[w] = { count: 0, sumAvg: 0 };
+    wardStats[w].count += 1;
+    wardStats[w].sumAvg += parseFloat(r.avgAll || 0);
+  });
+
+  const progBody = document.getElementById('dashByProgramBody');
+  const progKeys = Object.keys(progCounts);
+  if (!progKeys.length) {
+    progBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b;">Chưa có dữ liệu</td></tr>`;
+  } else {
+    progBody.innerHTML = progKeys.map(k => {
+      const c = progCounts[k];
+      const pct = ((c / total) * 100).toFixed(1) + '%';
+      return `<tr><td><strong>${k}</strong></td><td>${c}</td><td>${pct}</td></tr>`;
+    }).join('');
+  }
+
+  // 2. Thống kê theo Phường / Xã
+  const wardBody = document.getElementById('dashByWardBody');
+  const wardKeys = Object.keys(wardStats);
+  if (!wardKeys.length) {
+    wardBody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b;">Chưa có dữ liệu</td></tr>`;
+  } else {
+    wardBody.innerHTML = wardKeys.map(w => {
+      const st = wardStats[w];
+      const avgW = (st.sumAvg / st.count).toFixed(2);
+      return `<tr><td><strong>${w}</strong></td><td>${st.count}</td><td>${avgW} / 4.00</td></tr>`;
+    }).join('');
+  }
+
+  // 3. Bảng chi tiết
   const tbody = document.getElementById('recordsTableBody');
   if (!recs.length) {
     tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding:18px; color:#64748b;">Chưa có phiếu khảo sát nào được gửi trên thiết bị này.</td></tr>`;
@@ -940,7 +1066,7 @@ function renderRecordsTable() {
       <td>${i + 1}</td>
       <td>${r.timestamp}</td>
       <td><strong>${r.fullName}</strong></td>
-      <td>${r.unitName}</td>
+      <td><strong>${r.unitName}</strong></td>
       <td>${r.phone}</td>
       <td>${r.roleGroup}</td>
       <td>${r.tc1}</td>
@@ -949,7 +1075,7 @@ function renderRecordsTable() {
       <td>${r.tc4}</td>
       <td>${r.tc5}</td>
       <td><strong>${r.avgAll}</strong></td>
-      <td><span style="color:#15803d; font-weight:700;">${r.classShort || r.levelTitle}</span></td>
+      <td><span style="color:#15803d; font-weight:700;">${r.programShort}</span></td>
     </tr>
   `).join('');
 }
@@ -957,14 +1083,14 @@ function renderRecordsTable() {
 function saveWebhook() {
   const val = document.getElementById('webhookUrl').value.trim();
   localStorage.setItem('ai_survey_webhook', val);
-  alert(val ? 'Đã lưu kết nối Google Sheets thành công!' : 'Đã xóa kết nối Google Sheets.');
+  alert(val ? 'Đã lưu kết nối Google Drive thành công!' : 'Đã xóa kết nối Google Drive.');
 }
 
 function clearAllRecords() {
   if (!confirm('Bạn có chắc muốn xóa danh sách kết quả lưu tạm trên trình duyệt này?')) return;
   localStorage.removeItem('ai_survey_records');
   updateSavedCount();
-  renderRecordsTable();
+  renderDashboardAndTable();
 }
 
 function resetSurvey() {
@@ -982,12 +1108,13 @@ function copyZaloSummary() {
   const text =
     `[KẾT QUẢ KHẢO SÁT MỨC ĐỘ THÀNH THỤC AI]\n` +
     `• Họ và tên: ${lastEvaluation.fullName}\n` +
-    `• Đơn vị: ${lastEvaluation.unitName} (${lastEvaluation.roleGroup})\n` +
-    `• SĐT Zalo: ${lastEvaluation.phone}\n` +
+    `• Đơn vị (Phường/Xã): ${lastEvaluation.unitName}\n` +
+    `• Vị trí: ${lastEvaluation.roleGroup} | SĐT: ${lastEvaluation.phone}\n` +
     `• Điểm TB Chung: ${lastEvaluation.avgAll}/4.00 (TC1:${lastEvaluation.tc1} | Bảo mật TC2:${lastEvaluation.tc2} | Giao việc TC3:${lastEvaluation.tc3} | Luật/Excel TC4:${lastEvaluation.tc4} | Trợ lý AI TC5:${lastEvaluation.tc5})\n` +
-    `➔ XẾP LỚP: ${lastEvaluation.classShort}`;
+    `• ${lastEvaluation.maturityText}\n` +
+    `• ${lastEvaluation.programFitText}`;
   navigator.clipboard.writeText(text).then(() => {
-    alert('Đã copy tóm tắt kết quả! Anh/chị có thể dán (Paste) gửi qua Zalo cho Ban Tổ Chức.');
+    alert('Đã copy kết quả đánh giá! Anh/chị có thể dán (Paste) vào Zalo.');
   });
 }
 
@@ -1002,19 +1129,19 @@ function exportAllCSV() {
     alert('Chưa có dữ liệu khảo sát nào để xuất!');
     return;
   }
-  downloadCSV(recs, `Tong_Hop_Xep_Lop_AI_Vien_Chuc_${new Date().toISOString().slice(0,10)}.csv`);
+  downloadCSV(recs, `Tong_Hop_Khao_Sat_AI_Theo_Phuong_${new Date().toISOString().slice(0,10)}.csv`);
 }
 
 function downloadCSV(rowsData, filename) {
   const headers = [
-    "Thời gian", "Họ và tên", "Đơn vị", "Số điện thoại", "Email", "Nhóm vị trí",
-    "Điểm TC1", "Điểm TC2 (Bảo mật)", "Điểm TC3 (Giao việc 5 bước)", "Điểm TC4 (Luật/Excel)", "Điểm TC5 (Trợ lý AI)",
-    "Điểm TB Chung (Thang 4)", "Xếp loại Level", "Lớp Đào Tạo Được Xếp"
+    "Thời gian", "Họ và tên", "Đơn vị (Phường/Xã)", "Số điện thoại", "Địa chỉ Email", "Nhóm vị trí công tác",
+    "Điểm TC1", "Điểm TC2 (Bảo mật)", "Điểm TC3 (Giao việc)", "Điểm TC4 (Luật/Excel)", "Điểm TC5 (Trợ lý AI)",
+    "Điểm TB Chung (Thang 4)", "Nhận xét mức độ thành thục", "Chương trình phù hợp"
   ];
   const csvRows = rowsData.map(r => [
     r.timestamp, r.fullName, r.unitName, r.phone, r.email, r.roleGroup,
     r.tc1, r.tc2, r.tc3, r.tc4, r.tc5, r.avgAll,
-    r.levelTitle, r.classShort || r.classDesc
+    r.maturityText, r.programShort
   ].map(v => `"${String(v || '').replace(/"/g, '""')}"`).join(","));
 
   const csvContent = "\uFEFF" + headers.join(",") + "\n" + csvRows.join("\n");
