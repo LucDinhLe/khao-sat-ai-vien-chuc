@@ -845,7 +845,11 @@ function renderQuestions() {
   if (hookFromUrl) {
     localStorage.setItem('ai_survey_webhook', hookFromUrl);
   }
-  const savedHook = localStorage.getItem('ai_survey_webhook') || DEFAULT_GOOGLE_DRIVE_WEBHOOK;
+  let savedHook = localStorage.getItem('ai_survey_webhook');
+  if (!savedHook) {
+    savedHook = DEFAULT_GOOGLE_DRIVE_WEBHOOK;
+    localStorage.setItem('ai_survey_webhook', DEFAULT_GOOGLE_DRIVE_WEBHOOK);
+  }
   document.getElementById('webhookUrl').value = savedHook;
 }
 
@@ -1002,13 +1006,22 @@ document.getElementById('surveyForm').addEventListener('submit', function(e) {
     syncMsg.innerText = "⏳ Đang đồng bộ kết quả về Google Drive của Ban Tổ Chức...";
     fetch(hook, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(lastEvaluation)
-    }).then(() => {
+    }).then(res => {
       syncMsg.innerText = "✅ Đã lưu tự động kết quả của anh/chị về hệ thống Google Drive của Ban Tổ Chức!";
-    }).catch(() => {
-      syncMsg.innerText = "";
+    }).catch(err => {
+      // Fallback với mode: 'no-cors' nếu trình duyệt chặn CORS redirect
+      fetch(hook, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(lastEvaluation)
+      }).then(() => {
+        syncMsg.innerText = "✅ Đã lưu tự động kết quả của anh/chị về hệ thống Google Drive của Ban Tổ Chức!";
+      }).catch(() => {
+        syncMsg.innerText = "⚠️ Chưa đồng bộ được lên Google Drive. Kết quả đã được lưu tạm trên thiết bị.";
+      });
     });
   } else {
     syncMsg.innerText = "";
