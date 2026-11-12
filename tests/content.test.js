@@ -1,0 +1,14 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {GROUPS,MODULES,QUESTION_HELP}=require('../hai-quan/data.js');
+const questions=GROUPS.flatMap(g=>g.questions),html=fs.readFileSync(path.join(__dirname,'../hai-quan/index.html'),'utf8');
+test('Đủ 20 câu, mỗi câu 4 đáp án tăng mức và có chủ thể rõ',()=>{assert.equal(questions.length,20);for(const [title,options]of questions){assert(title.includes('anh/chị'));assert(title.includes('đang'));assert.equal(options.length,4);assert(options.every(x=>x.startsWith('Tôi ')));}});
+test('Mục tiêu học có nhãn riêng, không dùng tên trợ lý làm đáp án',()=>{assert(html.includes('Anh/chị muốn học trí tuệ nhân tạo để?'));for(const [id,m]of Object.entries(MODULES)){if(['M0','M1'].includes(id))continue;assert(m.goal);assert(!/trợ lý|agent/i.test(m.goal));}});
+test('Câu2 mức4 hỏi khả năng chọn và đánh giá từng công cụ',()=>{const text=questions[1][1][3];assert(text.includes('khả năng lựa chọn'));assert(text.includes('rủi ro và giới hạn của từng công cụ'));assert(!text.includes('hướng dẫn'));});
+test('Câu11 nói rõ bản thảo hoặc kết quả AI chưa đạt',()=>assert(questions[10][0].includes('bản thảo hoặc kết quả trí tuệ nhân tạo đưa ra chưa đạt yêu cầu')));
+test('Không còn dự thảo AI hoặc từ đầu ra trong nội dung hỏi và trả lời',()=>assert(!/dự thảo|đầu ra|kiểm thử/i.test(JSON.stringify(questions))));
+test('Câu14 nêu rõ thao tác với bảng dữ liệu Excel',()=>{assert(questions[13][0].includes('xử lý bảng dữ liệu trên Excel'));assert(QUESTION_HELP[14].includes('lọc dòng trùng'));});
+test('Câu17 nói các công việc, giải thích trợ lý được cài hướng dẫn',()=>{assert(questions[16][0].startsWith('Với các công việc lặp lại'));assert(QUESTION_HELP[17].includes('cài sẵn hướng dẫn'));});
+test('Câu18 giải thích trợ lý nào và kiểm tra điều gì',()=>{assert(questions[17][0].includes('trợ lý trí tuệ nhân tạo được cài sẵn hướng dẫn cho một công việc'));assert(QUESTION_HELP[18].includes('trợ lý soạn công văn'));assert(QUESTION_HELP[18].includes('không tự điền thông tin còn thiếu'));});
+test('Câu12 kiểm nội dung, câu20 kiểm trách nhiệm và thời điểm sử dụng',()=>{assert(questions[11][0].includes('kiểm tra bản thảo'));assert(questions[19][0].includes('kiểm tra và xin phê duyệt'));assert(QUESTION_HELP[20].includes('ai kiểm tra, ai phê duyệt'));assert(QUESTION_HELP[20].includes('Câu 12'));});
+test('Các mức4 không lấy việc hướng dẫn đồng nghiệp làm chuẩn',()=>assert(questions.every(q=>!/hướng dẫn đồng nghiệp|hướng dẫn lựa chọn/.test(q[1][3]))));

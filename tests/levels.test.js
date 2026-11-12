@@ -1,0 +1,11 @@
+'use strict';
+const test=require('node:test'),assert=require('node:assert/strict');
+const {recommend}=require('../hai-quan/scoring.js');
+const sample=(n=3)=>({answers:Array(20).fill(n),role:'staff',tasks:['office'],needs:['M2'],cases:{caseData:'safe',caseLaw:'verify'}});
+test('Level 1–4 từ kỹ năng tự đánh giá',()=>{for(const n of [1,2,3,4])assert.equal(recommend(sample(n)).level.number,n);});
+test('Chức vụ và nhu cầu không nâng level',()=>{const x=sample(1);x.role='manager';x.needs=['M7','M8'];assert.equal(recommend(x).level.number,1);});
+test('Không áp dụng không bị tính level thấp, nhưng không đủ bằng chứng để xếp level 4',()=>{const x=sample(4);for(let i=12;i<19;i++)x.answers[i]=null;const r=recommend(x);assert.equal(r.level.score,4);assert.equal(r.level.number,3);});
+test('Điểm an toàn không làm sai lệch level kỹ năng, vẫn có cảnh báo riêng',()=>{const x=sample(4);for(let i=4;i<8;i++)x.answers[i]=1;const r=recommend(x);assert.equal(r.level.number,4);assert.equal(r.safety,false);});
+test('Người mới không tự động được gợi ý học tự động hóa',()=>{assert(!recommend(sample(1)).electives.some(x=>x.id==='M7'));});
+test('Người thành thạo vẫn được gợi ý trợ lý theo nhiệm vụ',()=>{const x=sample(4);x.needs=['M0'];const r=recommend(x);assert(r.electives.some(a=>['M2','M4'].includes(a.id)));});
+test('Không nhận nhu cầu vượt giới hạn',()=>{const x=sample();x.needs=['M2','M3','M4','M5'];assert.throws(()=>recommend(x));});
